@@ -19,60 +19,22 @@ local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites.
 ---------------------------------------------------------------------------------
 
 -- Variaveis local
-local background, texto_iniciar, texto_nome_jogo, texto_autor, icon
+local background, texto_iniciar, icon
 
 function scene:create( event )
   local sceneGroup = self.view
 
-  background   = display.newImage( "images/cores.png" )
+  background   = display.newImage( "images/furacao.png" )
   background.x = display.contentCenterX
   background.y = display.contentCenterY
 
   sceneGroup:insert( background )
 
-  local function onIconTouch( self, event )
-
-    if event.phase == "began" then
-      self.alpha = 1
-
-      composer.gotoScene( "escolher_fases", { effect = "fade", time = 800 } )
-
-      return true
-    elseif event.phase == "ended" or event.phase == "cancelled" then
-      self.alpha = 0.25
-    end
-
-    return true
-  end
-
-  icon            = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("play_button"))
-  icon.x, icon.y  = display.contentCenterX, display.contentCenterY
-  icon.xScale     = 4.5
-  icon.yScale     = 4.5
-  icon.alpha      = 0.25
-  icon.touch      = onIconTouch
-  icon:addEventListener( "touch", icon )
-  sceneGroup:insert( icon )
-
-  local textField = display.newText({
-     text     = "Sinônimo ou Antônimo",
-     x        = display.contentCenterX,
-     y        = 70,
-     width    = 100,
-     fontSize = 20,
-     align    = "center"
-  })
-  sceneGroup:insert( textField )
-
-  texto_iniciar = display.newText( "Jogar", 0, 0, native.systemFontBold, 24 )
+  texto_iniciar = display.newText( "Escolher Fases", 0, 0, native.systemFontBold, 24 )
   texto_iniciar:setFillColor( 255 )
   texto_iniciar.x, texto_iniciar.y = display.contentCenterX, display.contentCenterY
-  sceneGroup:insert( texto_iniciar )
 
-  texto_autor = display.newText( "por Igor Rocha", 0, 0, native.systemFontBold, 12 )
-  texto_autor:setFillColor( 255 )
-  texto_autor.x, texto_autor.y = display.contentCenterX, display.contentHeight - 20
-  sceneGroup:insert( texto_autor )
+  sceneGroup:insert( texto_iniciar )
 end
 
 -- "scene:show()"
@@ -102,7 +64,6 @@ function scene:hide( event )
         -- Example: stop timers, stop animation, stop audio, etc.
     elseif ( phase == "did" ) then
         -- Called immediately after scene goes off screen.
-        composer.removeScene( "tela_inicial", true )
     end
 end
 
@@ -110,7 +71,6 @@ end
 function scene:destroy( event )
 
     local sceneGroup = self.view
-    print( "bla bla bla" )
 
     -- Called prior to the removal of scene's view ("sceneGroup").
     -- Insert code here to clean up the scene.
