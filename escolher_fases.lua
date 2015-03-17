@@ -4,37 +4,51 @@
 --
 ---------------------------------------------------------------------------------
 
-local composer          = require "composer"
+local composer                = require "composer"
 
-local scene             = composer.newScene()
+local scene                   = composer.newScene()
 
-local glyphicons        = require("glyphicons")
+local glyphicons              = require("glyphicons")
 
-local glyphicons        = require("glyphicons")
+local glyphicons_sprite       = graphics.newImageSheet("glyphicons/glyphicons_sprites.png", glyphicons:getSheet())
 
-local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites.png", glyphicons:getSheet())
+local background_sheet        = require("spritesheet_background")
+
+local background_sheet_sprite = graphics.newImageSheet( "images/spritesheet_background.png", background_sheet:getSheet() )
 
 ---------------------------------------------------------------------------------
 -- IMPLEMENTACAO
 ---------------------------------------------------------------------------------
 
 -- Variaveis local
-local background, texto_iniciar, icon
+local background, texto1, texto2, icon, myRoundedRect
 
 function scene:create( event )
   local sceneGroup = self.view
 
-  background   = display.newImage( "images/furacao.png" )
+  background   = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("cores2"))
   background.x = display.contentCenterX
   background.y = display.contentCenterY
 
   sceneGroup:insert( background )
 
-  texto_iniciar = display.newText( "Escolher Fases", 0, 0, native.systemFontBold, 24 )
-  texto_iniciar:setFillColor( 255 )
-  texto_iniciar.x, texto_iniciar.y = display.contentCenterX, display.contentCenterY
+  texto1 = display.newText( "Fases", 0, 0, native.systemFontBold, 20 )
+  texto1:setFillColor( 255 )
+  texto1.x, texto1.y = display.contentCenterX, 50
 
-  sceneGroup:insert( texto_iniciar )
+  sceneGroup:insert( texto1 )
+
+  myRoundedRect = display.newRoundedRect( 80, 120, 50, 50, 12 )
+  myRoundedRect.strokeWidth = 3
+  myRoundedRect.alpha = 0.5
+  myRoundedRect.text = "bla"
+  myRoundedRect:setFillColor( 0.5 )
+  texto2 = display.newText( "1", 0, 0, native.systemFontBold, 24 )
+  texto2:setFillColor( 255 )
+  texto2.x, texto2.y = myRoundedRect.x, myRoundedRect.y
+
+  sceneGroup:insert( myRoundedRect )
+  sceneGroup:insert( texto2 )
 end
 
 -- "scene:show()"

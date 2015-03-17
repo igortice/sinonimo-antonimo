@@ -10,9 +10,11 @@ local scene             = composer.newScene()
 
 local glyphicons        = require("glyphicons")
 
-local glyphicons        = require("glyphicons")
-
 local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites.png", glyphicons:getSheet())
+
+local background_sheet  = require("spritesheet_background")
+
+local background_sheet_sprite      = graphics.newImageSheet( "images/spritesheet_background.png", background_sheet:getSheet() )
 
 ---------------------------------------------------------------------------------
 -- IMPLEMENTACAO
@@ -23,8 +25,7 @@ local background, texto_iniciar, texto_nome_jogo, texto_autor, icon
 
 function scene:create( event )
   local sceneGroup = self.view
-
-  background   = display.newImage( "images/cores.png" )
+  background   = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("cores1"))
   background.x = display.contentCenterX
   background.y = display.contentCenterY
 
@@ -35,7 +36,7 @@ function scene:create( event )
     if event.phase == "began" then
       self.alpha = 1
 
-      composer.gotoScene( "escolher_fases", { effect = "fade", time = 800 } )
+      composer.gotoScene( "escolher_fases", { effect = "slideLeft", time = 800 } )
 
       return true
     elseif event.phase == "ended" or event.phase == "cancelled" then
@@ -110,7 +111,6 @@ end
 function scene:destroy( event )
 
     local sceneGroup = self.view
-    print( "bla bla bla" )
 
     -- Called prior to the removal of scene's view ("sceneGroup").
     -- Insert code here to clean up the scene.
