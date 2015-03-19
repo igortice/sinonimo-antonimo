@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------
 --
--- tela_inicial.lua
+-- fase.lua
 --
 ---------------------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ local function config_background( sceneGroup )
   local background_sheet        = require("spritesheet_background")
   local background_sheet_sprite = graphics.newImageSheet( "images/spritesheet_background.png", background_sheet:getSheet() )
 
-  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("cores1"))
+  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("cores3"))
   background.x      = display.contentCenterX
   background.y      = display.contentCenterY
 
@@ -35,15 +35,6 @@ end
 
 -- Config header
 local function config_header( sceneGroup )
-  local textField = display.newText({
-     text     = "Sinônimo ou Antônimo",
-     x        = display.contentCenterX,
-     y        = 70,
-     width    = 100,
-     fontSize = 20,
-     align    = "center"
-  })
-  sceneGroup:insert( textField )
 end
 
 
@@ -51,44 +42,8 @@ end
 -- Body
 ---------------------------------------------------------------------------------
 
--- Config play
-local function config_play( sceneGroup )
-  local function onIconTouch( self, event )
-
-    if event.phase == "began" then
-      self.alpha = 1
-
-      composer.gotoScene( "escolher_fases", { effect = "slideLeft", time = 800 } )
-    elseif event.phase == "ended" or event.phase == "cancelled" then
-      self.alpha = 0.25
-    end
-
-    return true
-  end
-
-
-
-  local glyphicons        = require("glyphicons")
-  local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites.png", glyphicons:getSheet())
-
-  local icon      = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("play_button"))
-  icon.x, icon.y  = display.contentCenterX, display.contentCenterY
-  icon.xScale     = 4.5
-  icon.yScale     = 4.5
-  icon.alpha      = 0.25
-  icon.touch      = onIconTouch
-  icon:addEventListener( "touch", icon )
-  sceneGroup:insert( icon )
-
-  local texto_iniciar = display.newText( "Jogar", 0, 0, native.systemFontBold, 24 )
-  texto_iniciar:setFillColor( 255 )
-  texto_iniciar.x, texto_iniciar.y = display.contentCenterX, display.contentCenterY
-  sceneGroup:insert( texto_iniciar )
-end
-
 -- Config body
 local function config_body( sceneGroup )
-  config_play( sceneGroup )
 end
 
 
@@ -98,10 +53,6 @@ end
 
 -- Config footer
 local function config_footer( sceneGroup )
-  local texto_autor = display.newText( "por Igor Rocha", 0, 0, native.systemFontBold, 12 )
-  texto_autor:setFillColor( 255 )
-  texto_autor.x, texto_autor.y = display.contentCenterX, display.contentHeight - 20
-  sceneGroup:insert( texto_autor )
 end
 
 

@@ -1,54 +1,97 @@
 ---------------------------------------------------------------------------------
 --
--- tela_inicial.lua
+-- escolher_fases.lua
 --
 ---------------------------------------------------------------------------------
 
-local composer                = require "composer"
-
-local scene                   = composer.newScene()
-
-local glyphicons              = require("glyphicons")
-
-local glyphicons_sprite       = graphics.newImageSheet("glyphicons/glyphicons_sprites.png", glyphicons:getSheet())
-
-local background_sheet        = require("spritesheet_background")
-
-local background_sheet_sprite = graphics.newImageSheet( "images/spritesheet_background.png", background_sheet:getSheet() )
+local composer  = require "composer"
+local scene     = composer.newScene()
 
 ---------------------------------------------------------------------------------
--- IMPLEMENTACAO
+-- Config Global
 ---------------------------------------------------------------------------------
 
--- Variaveis local
-local background, texto1, texto2, icon, myRoundedRect
+-- Configurar background
+local function config_background( sceneGroup )
+  local background_sheet        = require("spritesheet_background")
+  local background_sheet_sprite = graphics.newImageSheet( "images/spritesheet_background.png", background_sheet:getSheet() )
+
+  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("cores2"))
+  background.x      = display.contentCenterX
+  background.y      = display.contentCenterY
+
+  sceneGroup:insert( background )
+end
+
+-- Config global
+local function config_global( sceneGroup )
+  config_background( sceneGroup )
+end
+
+
+---------------------------------------------------------------------------------
+-- Header
+---------------------------------------------------------------------------------
+
+-- Config header
+local function config_header( sceneGroup )
+  local texto_head        = display.newText( "Fases", 0, 0, native.systemFontBold, 20 )
+  texto_head.x, texto_head.y  = display.contentCenterX, 50
+  texto_head:setFillColor( 255 )
+  sceneGroup:insert( texto_head )
+end
+
+
+---------------------------------------------------------------------------------
+-- Body
+---------------------------------------------------------------------------------
+
+-- Config diplay fases body
+local function config_display_fases( sceneGroup )
+  local function onFaseTouch( self, event )
+
+    if event.phase == "began" then
+      self.alpha = 1
+
+      composer.gotoScene( "fase", { effect = "slideLeft", time = 800 } )
+    elseif event.phase == "ended" or event.phase == "cancelled" then
+      self.alpha = 0.25
+    end
+
+    return true
+  end
+
+  local numero_fase = 1
+
+  local retangulo       = display.newRoundedRect( 80, 120, 50, 50, 12 )
+  retangulo.strokeWidth = 3
+  retangulo.alpha       = 0.5
+  retangulo.touch       = onFaseTouch
+  retangulo.fase        = numero_fase
+  retangulo:addEventListener( "touch", retangulo )
+  retangulo:setFillColor( 0.5 )
+  sceneGroup:insert( retangulo )
+
+  local texto_numero_fase                   = display.newText( numero_fase, 0, 0, native.systemFontBold, 24 )
+  texto_numero_fase.x, texto_numero_fase.y  = retangulo.x, retangulo.y
+  texto_numero_fase:setFillColor( 255 )
+  sceneGroup:insert( texto_numero_fase )
+end
+
+-- Config body
+local function config_body( sceneGroup )
+  config_display_fases( sceneGroup )
+end
+
 
 function scene:create( event )
   local sceneGroup = self.view
 
-  background   = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("cores2"))
-  background.x = display.contentCenterX
-  background.y = display.contentCenterY
+  config_global( sceneGroup )
 
-  sceneGroup:insert( background )
+  config_header( sceneGroup )
 
-  texto1 = display.newText( "Fases", 0, 0, native.systemFontBold, 20 )
-  texto1:setFillColor( 255 )
-  texto1.x, texto1.y = display.contentCenterX, 50
-
-  sceneGroup:insert( texto1 )
-
-  myRoundedRect = display.newRoundedRect( 80, 120, 50, 50, 12 )
-  myRoundedRect.strokeWidth = 3
-  myRoundedRect.alpha = 0.5
-  myRoundedRect.text = "bla"
-  myRoundedRect:setFillColor( 0.5 )
-  texto2 = display.newText( "1", 0, 0, native.systemFontBold, 24 )
-  texto2:setFillColor( 255 )
-  texto2.x, texto2.y = myRoundedRect.x, myRoundedRect.y
-
-  sceneGroup:insert( myRoundedRect )
-  sceneGroup:insert( texto2 )
+  config_body( sceneGroup )
 end
 
 -- "scene:show()"
