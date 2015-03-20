@@ -61,21 +61,24 @@ local function config_display_fases( sceneGroup )
     return true
   end
 
-  local numero_fase = 1
+  local tamanho_rec     = display.contentWidth * 0.20
+  local init_rect_x = {10, 98, 188}
+  local init_rect_y = {10, 98, 188}
+  for numero_fase=1,3 do
+    local retangulo       = display.newRoundedRect( tamanho_rec + init_rect_x[numero_fase], tamanho_rec + 50, tamanho_rec, tamanho_rec, 18 )
+    retangulo.strokeWidth = 3
+    retangulo.alpha       = 0.5
+    retangulo.touch       = onFaseTouch
+    retangulo.fase        = numero_fase
+    retangulo:addEventListener( "touch", retangulo )
+    retangulo:setFillColor( 0.5 )
+    sceneGroup:insert( retangulo )
 
-  local retangulo       = display.newRoundedRect( 80, 120, 50, 50, 12 )
-  retangulo.strokeWidth = 3
-  retangulo.alpha       = 0.5
-  retangulo.touch       = onFaseTouch
-  retangulo.fase        = numero_fase
-  retangulo:addEventListener( "touch", retangulo )
-  retangulo:setFillColor( 0.5 )
-  sceneGroup:insert( retangulo )
-
-  local texto_numero_fase                   = display.newText( numero_fase, 0, 0, native.systemFontBold, 24 )
-  texto_numero_fase.x, texto_numero_fase.y  = retangulo.x, retangulo.y
-  texto_numero_fase:setFillColor( 255 )
-  sceneGroup:insert( texto_numero_fase )
+    local texto_numero_fase                   = display.newText( numero_fase, 0, 0, native.systemFontBold, 24 )
+    texto_numero_fase.x, texto_numero_fase.y  = retangulo.x, retangulo.y
+    texto_numero_fase:setFillColor( 255 )
+    sceneGroup:insert( texto_numero_fase )
+  end
 end
 
 -- Config body
