@@ -33,8 +33,53 @@ end
 -- Header
 ---------------------------------------------------------------------------------
 
+-- Config count timer
+local function config_count_timer( sceneGroup )
+  local displayTime = display.newText({
+     text     = "00:00",
+     x        = 100,
+     y        = 20,
+     width    = 100,
+     fontSize = 20
+  })
+  sceneGroup:insert( displayTime )
+
+  local levelTime = 0
+  local modf      = math.modf
+  local function checkTime(event)
+    levelTime           = levelTime + 1
+    local start_seconds = levelTime
+
+    local start_minutes = modf(start_seconds/60)
+    local seconds       = start_seconds - start_minutes*60
+
+    local start_hours = modf(start_minutes/60)
+    local minutes     = start_minutes - start_hours*60
+
+    local start_days  = modf(start_hours/24)
+    local hours       = start_hours - start_days*24
+
+    local min = minutes < 10 and ("0" .. minutes) or minutes
+    local sec = seconds < 10 and ("0" .. seconds) or seconds
+
+    displayTime.text = min .. ":" .. sec
+  end
+  timer.performWithDelay( 1000, checkTime, levelTime )
+end
+
 -- Config header
-local function config_header( sceneGroup )
+local function config_header( sceneGroup, event )
+  local textField = display.newText({
+     text     = event.params.level,
+     x        = display.contentCenterX,
+     y        = 20,
+     width    = 100,
+     fontSize = 20,
+     align    = "center"
+  })
+  sceneGroup:insert( textField )
+
+  config_count_timer( sceneGroup )
 end
 
 
@@ -61,7 +106,7 @@ function scene:create( event )
 
   config_global( sceneGroup )
 
-  config_header( sceneGroup )
+  config_header( sceneGroup, event )
 
   config_body( sceneGroup )
 

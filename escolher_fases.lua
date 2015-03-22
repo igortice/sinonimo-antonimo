@@ -52,8 +52,12 @@ local function config_display_fases( sceneGroup )
 
     if event.phase == "began" then
       self.alpha = 1
-
-      composer.gotoScene( "fase", { effect = "slideLeft", time = 800 } )
+      local options = {
+          effect  = "slideLeft",
+          time    = 800,
+          params  = { level="Level " .. self.fase}
+      }
+      composer.gotoScene( "fase", options )
     elseif event.phase == "ended" or event.phase == "cancelled" then
       self.alpha = 0.25
     end
@@ -74,7 +78,7 @@ local function config_display_fases( sceneGroup )
       x = 3
     end
     local retangulo       = display.newRoundedRect( tamanho_rec + init_rect_x[x], tamanho_rec + y, tamanho_rec, tamanho_rec, 18 )
-    retangulo.strokeWidth = 3
+    retangulo.strokeWidth = 1
     retangulo.alpha       = 0.5
     retangulo.touch       = onFaseTouch
     retangulo.fase        = numero_fase
