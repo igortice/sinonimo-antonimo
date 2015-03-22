@@ -70,7 +70,6 @@ end
 
 -- "scene:show()"
 function scene:show( event )
-
     local sceneGroup = self.view
     local phase = event.phase
 

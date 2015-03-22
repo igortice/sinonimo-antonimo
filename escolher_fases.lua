@@ -61,11 +61,19 @@ local function config_display_fases( sceneGroup )
     return true
   end
 
-  local tamanho_rec     = display.contentWidth * 0.20
-  local init_rect_x = {10, 98, 188}
-  local init_rect_y = {10, 98, 188}
-  for numero_fase=1,3 do
-    local retangulo       = display.newRoundedRect( tamanho_rec + init_rect_x[numero_fase], tamanho_rec + 50, tamanho_rec, tamanho_rec, 18 )
+  local tamanho_rec = display.contentWidth * 0.20
+  local init_rect_x = {10, 100, 188}
+  local x, y        = 0, 0
+  for numero_fase=1,12 do
+    if numero_fase % 3 ~= 0 then
+      x = numero_fase % 3
+      if (numero_fase % 3  == 1) then
+        y = y + 80
+      end
+    else
+      x = 3
+    end
+    local retangulo       = display.newRoundedRect( tamanho_rec + init_rect_x[x], tamanho_rec + y, tamanho_rec, tamanho_rec, 18 )
     retangulo.strokeWidth = 3
     retangulo.alpha       = 0.5
     retangulo.touch       = onFaseTouch
