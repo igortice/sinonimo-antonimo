@@ -13,10 +13,10 @@ local scene     = composer.newScene()
 
 -- Configurar background
 local function config_background( sceneGroup )
-  local background_sheet        = require("spritesheet_background")
-  local background_sheet_sprite = graphics.newImageSheet( "images/spritesheet_background.png", background_sheet:getSheet() )
+  local background_sheet        = require("bg_sheets")
+  local background_sheet_sprite = graphics.newImageSheet( "images/bg_spritesheet.png", background_sheet:getSheet() )
 
-  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("cores1"))
+  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue1"))
   background.x      = display.contentCenterX
   background.y      = display.contentCenterY
 
@@ -58,7 +58,7 @@ local function config_play( sceneGroup )
     if event.phase == "began" then
       self.alpha = 1
 
-      composer.gotoScene( "escolher_fases", { effect = "slideLeft", time = 800 } )
+      composer.gotoScene( "escolher_fases", { effect = "zoomInOutFade", time = 500 } )
     elseif event.phase == "ended" or event.phase == "cancelled" then
       self.alpha = 0.25
     end

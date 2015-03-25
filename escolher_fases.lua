@@ -13,10 +13,10 @@ local scene     = composer.newScene()
 
 -- Configurar background
 local function config_background( sceneGroup )
-  local background_sheet        = require("spritesheet_background")
-  local background_sheet_sprite = graphics.newImageSheet( "images/spritesheet_background.png", background_sheet:getSheet() )
+  local background_sheet        = require("bg_sheets")
+  local background_sheet_sprite = graphics.newImageSheet( "images/bg_spritesheet.png", background_sheet:getSheet() )
 
-  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("cores2"))
+  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue2"))
   background.x      = display.contentCenterX
   background.y      = display.contentCenterY
 
@@ -53,8 +53,8 @@ local function config_display_fases( sceneGroup )
     if event.phase == "began" then
       self.alpha = 1
       local options = {
-          effect  = "slideLeft",
-          time    = 800,
+          effect  = "zoomInOutFade",
+          time    = 500,
           params  = { level="Level " .. self.fase}
       }
       composer.gotoScene( "fase", options )

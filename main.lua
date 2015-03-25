@@ -6,7 +6,7 @@ local function main( )
   local composer = require "composer"
 
   -- load first scene
-  composer.gotoScene( "escolher_fases", { effect = "fade", time = 500 } )
+  composer.gotoScene( "tela_inicial", { effect = "zoomInOutFade", time = 500 } )
 end
 
 main()

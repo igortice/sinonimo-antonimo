@@ -13,10 +13,10 @@ local scene     = composer.newScene()
 
 -- Configurar background
 local function config_background( sceneGroup )
-  local background_sheet        = require("spritesheet_background")
-  local background_sheet_sprite = graphics.newImageSheet( "images/spritesheet_background.png", background_sheet:getSheet() )
+  local background_sheet        = require("bg_sheets")
+  local background_sheet_sprite = graphics.newImageSheet( "images/bg_spritesheet.png", background_sheet:getSheet() )
 
-  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("cores3"))
+  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue3"))
   background.x      = display.contentCenterX
   background.y      = display.contentCenterY
 
@@ -78,8 +78,6 @@ local function config_header( sceneGroup, event )
      align    = "center"
   })
   sceneGroup:insert( textField )
-
-  config_count_timer( sceneGroup )
 end
 
 
@@ -119,6 +117,9 @@ function scene:show( event )
     local phase = event.phase
 
     if ( phase == "will" ) then
+
+
+      config_count_timer( sceneGroup )
         -- Called when the scene is still off screen (but is about to come on screen).
     elseif ( phase == "did" ) then
         -- Called when the scene is now on screen.
