@@ -11,6 +11,15 @@ local scene     = composer.newScene()
 -- Config Global
 ---------------------------------------------------------------------------------
 
+local function to_array( str )
+  local t = {}
+  for i = 1, #str do
+      t[i] = str:sub(i, i)
+  end
+
+  return t
+end
+
 -- Configurar background
 local function config_background( sceneGroup )
   local background_sheet        = require("bg_sheets")
@@ -118,13 +127,17 @@ end
 -- Body
 ---------------------------------------------------------------------------------
 
---  Set pergunta
-local repostas_ok = 0, pergunta, resposta
+local repostas_ok = 0, pergunta, resposta, resposta_array
+
 local function set_resposta( event )
   resposta        = event.params.questions[repostas_ok + 1].resposta
+  resposta_array  = to_array( resposta )
   result_resposta = ''
   for i=1,#resposta do
     local palavra = '__'
+    if i == 2 then
+      palavra = resposta_array[i]
+    end
     result_resposta = result_resposta .. palavra .. ' '
   end
 
@@ -138,7 +151,7 @@ end
 local function set_question( event, num )
   repostas_ok = num
 
-  pergunta.text = set_pergunta( event ) .. "\n" .. set_resposta( event )
+  pergunta.text = set_pergunta( event ):upper( ) .. "\n" .. set_resposta( event ):upper( )
 end
 
 -- Config questions
