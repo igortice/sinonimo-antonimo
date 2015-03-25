@@ -23,9 +23,17 @@ local function config_background( sceneGroup )
   sceneGroup:insert( background )
 end
 
+-- Config quantidade de questions
+local quantidade_questions
+local function config_quantidade_questions( sceneGroup, event )
+  quantidade_questions = #event.params.questions
+end
+
 -- Config global
-local function config_global( sceneGroup )
+local function config_global( sceneGroup, event )
   config_background( sceneGroup )
+
+  config_quantidade_questions( sceneGroup, event )
 end
 
 
@@ -37,10 +45,11 @@ end
 local function config_count_timer( sceneGroup )
   local displayTime = display.newText({
      text     = "00:00",
-     x        = 100,
+     x        = centerX,
      y        = 20,
-     width    = 100,
-     fontSize = 20
+     width    = _W - 100,
+     fontSize = 20,
+     align    = "left"
   })
   sceneGroup:insert( displayTime )
 
@@ -67,9 +76,9 @@ local function config_count_timer( sceneGroup )
   timer.performWithDelay( 1000, checkTime, levelTime )
 end
 
+--  Config lifes
 local quantidade_lifes = 3
 local quantidade_erros = 0
-
 local function config_lifes( sceneGroup )
   local glyphicons        = require("glyphicons")
   local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites2.png", glyphicons:getSheet())
@@ -82,24 +91,26 @@ local function config_lifes( sceneGroup )
     end
 
     icon.width, icon.height = 15, 15
-    icon.x, icon.y  = display.contentWidth - 115 + (i*20), 20
+    icon.x, icon.y  = _W - 115 + (i*20), 20
     sceneGroup:insert( icon )
   end
 end
 
--- Config header
-local function config_header( sceneGroup, event )
+local function config_nome_fase( sceneGroup, event )
   local textField = display.newText({
      text     = event.params.level,
-     x        = display.contentCenterX,
+     x        = centerX,
      y        = 20,
-     width    = 100,
-     fontSize = 20,
-     align    = "center"
+     fontSize = 20
   })
   sceneGroup:insert( textField )
+end
 
-  config_lifes(sceneGroup)
+-- Config header
+local function config_header( sceneGroup, event )
+  config_nome_fase( sceneGroup, event )
+
+  config_lifes( sceneGroup )
 end
 
 
@@ -107,8 +118,55 @@ end
 -- Body
 ---------------------------------------------------------------------------------
 
+--  Set pergunta
+local repostas_ok = 0, pergunta, resposta
+local function set_resposta( event )
+  resposta        = event.params.questions[repostas_ok + 1].resposta
+  result_resposta = ''
+  for i=1,#resposta do
+    local palavra = '__'
+    result_resposta = result_resposta .. palavra .. ' '
+  end
+
+  return result_resposta
+end
+
+local function set_pergunta( event )
+  return event.params.questions[repostas_ok + 1].palavra
+end
+
+local function set_question( event, num )
+  repostas_ok = num
+
+  pergunta.text = set_pergunta( event ) .. "\n" .. set_resposta( event )
+end
+
+-- Config questions
+local function config_questions( sceneGroup, event )
+  pergunta = display.newText({
+     text     = '',
+     x        = centerX,
+     y        = 100,
+     width    = _W - 100,
+     fontSize = 20,
+     align    = "center"
+  })
+
+  set_question( event, repostas_ok )
+
+  local retangulo = display.newRect( centerX, pergunta.y, _W - 100, 100 )
+  retangulo.strokeWidth = 3
+  retangulo.alpha       = 0.5
+  retangulo:setFillColor( 0 )
+  retangulo:setStrokeColor( 1, 1, 1 )
+
+  sceneGroup:insert( retangulo )
+  sceneGroup:insert( pergunta )
+end
+
 -- Config body
-local function config_body( sceneGroup )
+local function config_body( sceneGroup, event )
+  config_questions( sceneGroup, event )
 end
 
 
@@ -120,15 +178,14 @@ end
 local function config_footer( sceneGroup )
 end
 
-
 function scene:create( event )
   local sceneGroup = self.view
 
-  config_global( sceneGroup )
+  config_global( sceneGroup, event )
 
   config_header( sceneGroup, event )
 
-  config_body( sceneGroup )
+  config_body( sceneGroup , event )
 
   config_footer( sceneGroup )
 end
@@ -139,11 +196,9 @@ function scene:show( event )
     local phase = event.phase
 
     if ( phase == "will" ) then
-
-
-      config_count_timer( sceneGroup )
         -- Called when the scene is still off screen (but is about to come on screen).
     elseif ( phase == "did" ) then
+      config_count_timer( sceneGroup )
         -- Called when the scene is now on screen.
         -- Insert code here to make the scene come alive.
         -- Example: start timers, begin animation, play audio, etc.

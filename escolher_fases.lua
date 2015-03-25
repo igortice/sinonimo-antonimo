@@ -11,6 +11,14 @@ local scene     = composer.newScene()
 -- Config Global
 ---------------------------------------------------------------------------------
 
+-- Config data questions
+local data_questions
+local function config_data_questions( )
+  local json      = require "json"
+  local json_data = '[[{"palavra":"casa","resposta":"lar"},{"palavra":"trabalho","resposta":"emprego"}]]'
+  data_questions  = json.decode(json_data)
+end
+
 -- Configurar background
 local function config_background( sceneGroup )
   local background_sheet        = require("bg_sheets")
@@ -26,6 +34,8 @@ end
 -- Config global
 local function config_global( sceneGroup )
   config_background( sceneGroup )
+
+  config_data_questions()
 end
 
 
@@ -56,7 +66,7 @@ local function config_display_fases( sceneGroup )
       local options = {
           effect  = "zoomInOutFade",
           time    = 500,
-          params  = { level="Fase " .. self.fase}
+          params  = { level="Fase " .. self.fase, questions = data_questions[self.fase]}
       }
       composer.gotoScene( "fase", options )
     elseif event.phase == "ended" or event.phase == "cancelled" then
@@ -84,7 +94,7 @@ local function config_display_fases( sceneGroup )
     retangulo.alpha       = 0.5
     retangulo.touch       = onFaseTouch
     retangulo.fase        = numero_fase
-    retangulo:setFillColor( 0.5 )
+    retangulo:setFillColor( 0 )
     sceneGroup:insert( retangulo )
 
     local glyphicons        = require("glyphicons")
@@ -92,7 +102,7 @@ local function config_display_fases( sceneGroup )
     if fases_liberadas < numero_fase then
       local icon      = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("lock"))
       icon.x, icon.y  = retangulo.x, retangulo.y
-      icon.width, icon.height = 30, 35
+      icon.width, icon.height = 20, 20
       sceneGroup:insert( icon )
     else
       local texto_numero_fase                   = display.newText( numero_fase, 0, 0, native.systemFontBold, 24 )
@@ -122,7 +132,6 @@ end
 
 -- "scene:show()"
 function scene:show( event )
-
     local sceneGroup = self.view
     local phase = event.phase
 
