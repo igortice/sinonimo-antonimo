@@ -67,6 +67,26 @@ local function config_count_timer( sceneGroup )
   timer.performWithDelay( 1000, checkTime, levelTime )
 end
 
+local quantidade_lifes = 3
+local quantidade_erros = 0
+
+local function config_lifes( sceneGroup )
+  local glyphicons        = require("glyphicons")
+  local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites2.png", glyphicons:getSheet())
+
+  for i=1,quantidade_lifes do
+    local icon      = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart"))
+
+    if quantidade_erros >= i then
+      icon      = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart_empty"))
+    end
+
+    icon.width, icon.height = 15, 15
+    icon.x, icon.y  = display.contentWidth - 115 + (i*20), 20
+    sceneGroup:insert( icon )
+  end
+end
+
 -- Config header
 local function config_header( sceneGroup, event )
   local textField = display.newText({
@@ -78,6 +98,8 @@ local function config_header( sceneGroup, event )
      align    = "center"
   })
   sceneGroup:insert( textField )
+
+  config_lifes(sceneGroup)
 end
 
 

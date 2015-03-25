@@ -54,8 +54,8 @@ end
 -- Config play
 local function config_play( sceneGroup )
   local function onIconTouch( self, event )
-
     if event.phase == "began" then
+      audio.play( popSound )
       self.alpha = 1
 
       composer.gotoScene( "escolher_fases", { effect = "zoomInOutFade", time = 500 } )
@@ -65,8 +65,6 @@ local function config_play( sceneGroup )
 
     return true
   end
-
-
 
   local glyphicons        = require("glyphicons")
   local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites.png", glyphicons:getSheet())
