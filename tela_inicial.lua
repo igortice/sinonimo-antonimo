@@ -17,8 +17,8 @@ local function config_background( sceneGroup )
   local background_sheet_sprite = graphics.newImageSheet( "images/bg_spritesheet.png", background_sheet:getSheet() )
 
   local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue1"))
-  background.x      = display.contentCenterX
-  background.y      = display.contentCenterY
+  background.x      = centerX
+  background.y      = centerY
 
   sceneGroup:insert( background )
 end
@@ -37,7 +37,7 @@ end
 local function config_header( sceneGroup )
   local textField = display.newText({
      text     = "Sinônimo ou Antônimo",
-     x        = display.contentCenterX,
+     x        = centerX,
      y        = 70,
      width    = 100,
      fontSize = 20,
@@ -56,7 +56,6 @@ local function config_play( sceneGroup )
   local function onIconTouch( self, event )
     if event.phase == "began" then
       audio.play( popSound )
-      self.alpha = 1
 
       composer.gotoScene( "escolher_fases", { effect = "zoomInOutFade", time = 500 } )
     elseif event.phase == "ended" or event.phase == "cancelled" then
@@ -66,21 +65,15 @@ local function config_play( sceneGroup )
     return true
   end
 
-  local glyphicons        = require("glyphicons")
-  local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites.png", glyphicons:getSheet())
-
-  local icon      = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("play_button"))
-  icon.x, icon.y  = display.contentCenterX, display.contentCenterY
-  icon.xScale     = 4.5
-  icon.yScale     = 4.5
-  icon.alpha      = 0.25
-  icon.touch      = onIconTouch
-  icon:addEventListener( "touch", icon )
-  sceneGroup:insert( icon )
+  local disk_green      = display.newImage("images/puck_green.png")
+  disk_green.x, disk_green.y  = centerX, centerY
+  disk_green.touch      = onIconTouch
+  disk_green:addEventListener( "touch", disk_green )
+  sceneGroup:insert( disk_green )
 
   local texto_iniciar = display.newText( "Jogar", 0, 0, native.systemFontBold, 24 )
   texto_iniciar:setFillColor( 255 )
-  texto_iniciar.x, texto_iniciar.y = display.contentCenterX, display.contentCenterY
+  texto_iniciar.x, texto_iniciar.y = centerX, centerY
   sceneGroup:insert( texto_iniciar )
 end
 
@@ -98,7 +91,7 @@ end
 local function config_footer( sceneGroup )
   local texto_autor = display.newText( "por Igor Rocha", 0, 0, native.systemFontBold, 12 )
   texto_autor:setFillColor( 255 )
-  texto_autor.x, texto_autor.y = display.contentCenterX, display.contentHeight - 20
+  texto_autor.x, texto_autor.y = centerX, _H - 20
   sceneGroup:insert( texto_autor )
 end
 

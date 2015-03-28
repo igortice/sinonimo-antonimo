@@ -25,8 +25,8 @@ local function config_background( sceneGroup )
   local background_sheet_sprite = graphics.newImageSheet( "images/bg_spritesheet.png", background_sheet:getSheet() )
 
   local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue2"))
-  background.x      = display.contentCenterX
-  background.y      = display.contentCenterY
+  background.x      = centerX
+  background.y      = centerY
 
   sceneGroup:insert( background )
 end
@@ -46,7 +46,7 @@ end
 -- Config header
 local function config_header( sceneGroup )
   local texto_head        = display.newText( "Fases", 0, 0, native.systemFontBold, 20 )
-  texto_head.x, texto_head.y  = display.contentCenterX, 50
+  texto_head.x, texto_head.y  = centerX, 50
   texto_head:setFillColor( 255 )
   sceneGroup:insert( texto_head )
 end
@@ -76,7 +76,7 @@ local function config_display_fases( sceneGroup )
     return true
   end
 
-  local tamanho_rec = display.contentWidth * 0.20
+  local tamanho_rec = _W * 0.20
   local init_rect_x = {10, 100, 188}
   local x, y        = 0, 0
   for numero_fase=1,12 do
@@ -88,28 +88,28 @@ local function config_display_fases( sceneGroup )
     else
       x = 3
     end
-    local retangulo       = display.newRoundedRect( tamanho_rec + init_rect_x[x], tamanho_rec + y, tamanho_rec, tamanho_rec, 18 )
 
-    retangulo.strokeWidth = 2
-    retangulo.alpha       = 0.5
-    retangulo.touch       = onFaseTouch
-    retangulo.fase        = numero_fase
-    retangulo:setFillColor( 0 )
-    sceneGroup:insert( retangulo )
+    local disk_yellow = display.newImage("images/puck_yellow.png")
+
+    disk_yellow.x, disk_yellow.y  = tamanho_rec + init_rect_x[x], tamanho_rec + y
+    disk_yellow.xScale, disk_yellow.yScale = 0.5, 0.5
+    disk_yellow.touch       = onFaseTouch
+    disk_yellow.fase        = numero_fase
+    sceneGroup:insert( disk_yellow )
 
     local glyphicons        = require("glyphicons")
     local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites2.png", glyphicons:getSheet())
     if fases_liberadas < numero_fase then
       local icon      = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("lock"))
-      icon.x, icon.y  = retangulo.x, retangulo.y
-      icon.width, icon.height = 20, 20
+      icon.x, icon.y  = disk_yellow.x, disk_yellow.y
+      icon.width, icon.height = 18, 20
       sceneGroup:insert( icon )
     else
       local texto_numero_fase                   = display.newText( numero_fase, 0, 0, native.systemFontBold, 24 )
-      texto_numero_fase.x, texto_numero_fase.y  = retangulo.x, retangulo.y
+      texto_numero_fase.x, texto_numero_fase.y  = disk_yellow.x, disk_yellow.y
       texto_numero_fase:setFillColor( 255 )
       sceneGroup:insert( texto_numero_fase )
-      retangulo:addEventListener( "touch", retangulo )
+      disk_yellow:addEventListener( "touch", disk_yellow )
     end
   end
 end
