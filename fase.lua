@@ -19,13 +19,13 @@ local function to_array( str )
 
   return t
 end
-
+local background
 -- Configurar background
 local function config_background( sceneGroup )
   local background_sheet        = require("bg_sheets")
   local background_sheet_sprite = graphics.newImageSheet( "images/bg_spritesheet.png", background_sheet:getSheet() )
 
-  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue3"))
+  background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue3"))
   background.x      = display.contentCenterX
   background.y      = display.contentCenterY
 
@@ -135,9 +135,9 @@ local function set_resposta( event )
   result_resposta = ''
   for i=1,#resposta do
     local palavra = '__'
-    if i == 2 then
-      palavra = resposta_array[i]
-    end
+    -- if i == 2 then
+    --   palavra = resposta_array[i]
+    -- end
     result_resposta = result_resposta .. palavra .. ' '
   end
 
@@ -177,9 +177,84 @@ local function config_questions( sceneGroup, event )
   sceneGroup:insert( pergunta )
 end
 
+--Config dicas
+local function config_letras_body( sceneGroup, event )
+  local physics   = require("physics")
+  local gameUI    = require("gameUI")
+  local easingx   = require("easingx")
+  -- physics.setDrawMode( "hybrid" )
+
+  physics.start()
+  physics.setGravity( 0, 0 ) -- no gravity in any direction
+
+  system.activate( "multitouch" )
+
+  local alfabeto = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
+  -- for i=1,#alfabeto do
+  --   alfabeto[i] = "images/alfabeto/" .. alfabeto[i] .. ".png"
+  -- end
+  local allDisks = {} -- empty table for storing objects
+
+  -- Automatic culling of offscreen objects
+  local function config_drag_letra()
+    for i = 1, #allDisks do
+      local oneDisk = allDisks[i]
+      if (oneDisk and oneDisk.x) then
+        if oneDisk.y < 154 then
+          print( oneDisk.letra )
+          oneDisk:removeSelf()
+          table.remove( allDisks, i )
+        end
+        if oneDisk.x < 10 or oneDisk.x > _W - 10 or oneDisk.y < -1 or oneDisk.y > _H - 10 then
+          print( 'saiu' )
+          oneDisk:removeSelf()
+          table.remove( allDisks, i )
+        end
+      end
+    end
+  end
+
+  local function dragBody( event )
+    return gameUI.dragBody( event )
+  end
+
+  local function spawnDisk( event )
+    local phase = event.phase
+
+    if "ended" == phase then
+      audio.play( popSound )
+
+      letra = alfabeto[ math.random( 1, #alfabeto ) ]
+      path_letra = "images/alfabeto/" .. letra .. ".png"
+      allDisks[#allDisks + 1] = display.newImage( path_letra )
+      local disk = allDisks[#allDisks]
+      disk.x = event.x; disk.y = event.y
+      disk.width, disk.height = 30, 30
+      disk.rotation = math.random( 1, 360 )
+      disk.xScale = 0.8; disk.yScale = 0.8
+      disk.letra = letra
+
+      transition.to(disk, { time = 1500, xScale = 2.0, yScale = 2.0, transition = easingx.easeOutElastic }) -- "pop" animation
+
+      physics.addBody( disk, { density=0.6, friction=1} )
+      disk.linearDamping = 0.4
+      disk.angularDamping = 0.6
+
+      disk:addEventListener( "touch", dragBody ) -- make object draggable
+    end
+
+    return true
+  end
+
+  background:addEventListener( "touch", spawnDisk ) -- touch the screen to create disks
+  Runtime:addEventListener( "enterFrame", config_drag_letra ) -- clean up offscreen disks
+end
+
 -- Config body
 local function config_body( sceneGroup, event )
   config_questions( sceneGroup, event )
+
+  config_letras_body( sceneGroup, event )
 end
 
 
