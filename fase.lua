@@ -164,18 +164,16 @@ local resposta_usuario_array = {}
 -- Set respostas
 ---------------------------------------------------------------------------------
 local function set_resposta( event, letra )
-  resposta        = event.params.questions[repostas_ok + 1].resposta
-  resposta_array  = to_array( resposta )
-  result_resposta = ''
-  local indexs_letra = allIndexOf(resposta_array, letra)
+  resposta            = event.params.questions[repostas_ok + 1].resposta
+  resposta_array      = to_array( resposta )
+  result_resposta     = ''
+  local indexs_letra  = allIndexOf(resposta_array, letra)
   for i=1,#indexs_letra do
     if (resposta_usuario_array[indexs_letra[i]] == nil) then
       resposta_usuario_array[indexs_letra[i]] = letra
       break
     end
-
   end
-
 
   for i=1,#resposta do
     local palavra = '__'
@@ -277,32 +275,39 @@ local function config_letras_body( sceneGroup, event )
   -- Config gerar letras etapas
   ---------------------------------------------------------------------------------
   function config_gerar_letras_etapa()
-    audio.play( popSound )
-    print_r(resposta_array)
+    local quantidade_letras_body  = #resposta_array * 2
+    local letras_body             = resposta_array
+    while #letras_body ~= quantidade_letras_body do
+        letras_body[#letras_body+1] = alfabeto[ math.random( 1, #alfabeto ) ]
+    end
 
-    letra       = alfabeto[ math.random( 1, #alfabeto ) ]
-    path_letra  = "images/alfabeto/" .. letra .. ".png"
-    all_objects_alfabeto[#all_objects_alfabeto + 1] = display.newImage( path_letra )
-    local object_alfabeto = all_objects_alfabeto[#all_objects_alfabeto]
-    object_alfabeto.x = math.random( 70 , 260)
-    object_alfabeto.y = math.random( 200 , 450)
-    object_alfabeto.width, object_alfabeto.height = 20, 20
-    object_alfabeto.rotation = math.random( 1, 360 )
-    object_alfabeto.xScale, object_alfabeto.yScale = 0.8, 0.8
-    object_alfabeto.letra = letra
+    letras_body = shuffleTable( letras_body )
 
-    transition.to(object_alfabeto, { time = 800, xScale = 2.0, yScale = 2.0, transition = easing.outElastic }) -- "pop" animation
+    for i=1,#letras_body do
+      audio.play( popSound )
 
-    physics.addBody( object_alfabeto, { density=0.6, friction=1 } )
-    object_alfabeto.linearDamping  = 0.4
-    object_alfabeto.angularDamping = 1.6
+      local letra = letras_body[i]
+      path_letra  = "images/alfabeto/" .. letra .. ".png"
+      all_objects_alfabeto[#all_objects_alfabeto + 1] = display.newImage( path_letra )
+      local object_alfabeto = all_objects_alfabeto[#all_objects_alfabeto]
+      object_alfabeto.x = math.random( 70 , 260)
+      object_alfabeto.y = math.random( 200 , 450)
+      object_alfabeto.width, object_alfabeto.height = 20, 20
+      object_alfabeto.rotation = math.random( 1, 360 )
+      object_alfabeto.xScale, object_alfabeto.yScale = 0.8, 0.8
+      object_alfabeto.letra = letra
 
-    object_alfabeto:addEventListener( "touch", config_drag_body )
+      transition.to(object_alfabeto, { time = 800, xScale = 2.0, yScale = 2.0, transition = easing.outElastic })
+
+      physics.addBody( object_alfabeto, { density=0.6, friction=1 } )
+      object_alfabeto.linearDamping  = 0.4
+      object_alfabeto.angularDamping = 1.6
+
+      object_alfabeto:addEventListener( "touch", config_drag_body )
+    end
   end
 
   Runtime:addEventListener( "enterFrame", config_drag_letra ) -- clean up offscreen disks
-
-  -- timer.performWithDelay( 1000, gerar_letras_etapa )
 end
 
 -- Config body

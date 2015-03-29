@@ -27,3 +27,23 @@ function allIndexOf( table, item )
 
   return result
 end
+
+---------------------------------------------------------------------------------
+--
+-- Shuffle Table
+--
+---------------------------------------------------------------------------------
+math.randomseed( os.time() )
+
+function shuffleTable( t )
+    local rand = math.random
+    local iterations = #t
+    local j
+
+    for i = iterations, 2, -1 do
+        j = rand(i)
+        t[i], t[j] = t[j], t[i]
+    end
+
+    return t
+end
