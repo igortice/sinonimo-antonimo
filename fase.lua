@@ -200,7 +200,6 @@ local function set_resposta( event, letra )
 end
 
 local function check_letra( sceneGroup, event, letra )
-  print_r(#allIndexOf( resposta_array, letra))
   if #allIndexOf( resposta_array, letra) == 0 then
     remover_life( sceneGroup )
   end
@@ -247,29 +246,25 @@ end
 
 --Config dicas
 local function config_letras_body( sceneGroup, event )
+  local alfabeto              = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
+  local all_objects_alfabeto  = {}
 
-  local alfabeto = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
-  -- for i=1,#alfabeto do
-  --   alfabeto[i] = "images/alfabeto/" .. alfabeto[i] .. ".png"
-  -- end
-  local allDisks = {} -- empty table for storing objects
-
-  -- Automatic culling of offscreen objects
+  -- Config drag letra
   local function config_drag_letra()
-    for i = 1, #allDisks do
-      local oneDisk = allDisks[i]
-      if (oneDisk and oneDisk.x) then
-        if oneDisk.y < 154 then
-          print( oneDisk.letra )
-          check_letra( sceneGroup, event, oneDisk.letra )
-          oneDisk:removeSelf()
-          table.remove( allDisks, i )
+    for i = 1, #all_objects_alfabeto do
+      local object_alfabeto = all_objects_alfabeto[i]
+      if (object_alfabeto and object_alfabeto.x) then
+        if object_alfabeto.y < 154 then
+          print( object_alfabeto.letra )
+          check_letra( sceneGroup, event, object_alfabeto.letra )
+          object_alfabeto:removeSelf()
+          table.remove( all_objects_alfabeto, i )
 
         end
-        if oneDisk.x < 10 or oneDisk.x > _W - 10 or oneDisk.y < -1 or oneDisk.y > _H - 10 then
+        if object_alfabeto.x < 10 or object_alfabeto.x > _W - 10 or object_alfabeto.y < -1 or object_alfabeto.y > _H - 10 then
           print( 'saiu' )
-          oneDisk:removeSelf()
-          table.remove( allDisks, i )
+          object_alfabeto:removeSelf()
+          table.remove( all_objects_alfabeto, i )
         end
       end
     end
@@ -279,37 +274,33 @@ local function config_letras_body( sceneGroup, event )
     return gameUI.dragBody( event )
   end
 
-  local function spawnDisk( event )
-    local phase = event.phase
+  function gerar_letras_etapa()
+    audio.play( popSound )
 
-    if "ended" == phase then
-      audio.play( popSound )
+    letra = alfabeto[ math.random( 1, #alfabeto ) ]
+    path_letra = "images/alfabeto/" .. letra .. ".png"
+    all_objects_alfabeto[#all_objects_alfabeto + 1] = display.newImage( path_letra )
+    local object_alfabeto = all_objects_alfabeto[#all_objects_alfabeto]
+    local pos_x = math.random( 70 , 260)
+    local pos_y = math.random( 200 , 450)
+    object_alfabeto.x = pos_x; object_alfabeto.y = pos_y
+    object_alfabeto.width, object_alfabeto.height = 30, 30
+    object_alfabeto.rotation = math.random( 1, 360 )
+    object_alfabeto.xScale = 0.8; object_alfabeto.yScale = 0.8
+    object_alfabeto.letra = letra
 
-      letra = alfabeto[ math.random( 1, #alfabeto ) ]
-      -- letra = 'e'
-      path_letra = "images/alfabeto/" .. letra .. ".png"
-      allDisks[#allDisks + 1] = display.newImage( path_letra )
-      local disk = allDisks[#allDisks]
-      disk.x = event.x; disk.y = event.y
-      disk.width, disk.height = 30, 30
-      disk.rotation = math.random( 1, 360 )
-      disk.xScale = 0.8; disk.yScale = 0.8
-      disk.letra = letra
+    transition.to(object_alfabeto, { time = 800, xScale = 2.0, yScale = 2.0, transition = easing.outElastic }) -- "pop" animation
 
-      transition.to(disk, { time = 800, xScale = 2.0, yScale = 2.0, transition = easing.outElastic }) -- "pop" animation
+    physics.addBody( object_alfabeto, { density=0.6, friction=1 } )
+    object_alfabeto.linearDamping  = 0.4
+    object_alfabeto.angularDamping = 0.6
 
-      physics.addBody( disk, { density=0.6, friction=1 } )
-      disk.linearDamping  = 0.4
-      disk.angularDamping = 0.6
-
-      disk:addEventListener( "touch", dragBody ) -- make object draggable
-    end
-
-    return true
+    object_alfabeto:addEventListener( "touch", dragBody )
   end
 
-  background:addEventListener( "touch", spawnDisk ) -- touch the screen to create disks
   Runtime:addEventListener( "enterFrame", config_drag_letra ) -- clean up offscreen disks
+
+  -- timer.performWithDelay( 1000, gerar_letras_etapa )
 end
 
 -- Config body
@@ -349,6 +340,7 @@ function scene:show( event )
         -- Called when the scene is still off screen (but is about to come on screen).
     elseif ( phase == "did" ) then
       config_count_timer( sceneGroup )
+      gerar_letras_etapa()
         -- Called when the scene is now on screen.
         -- Insert code here to make the scene come alive.
         -- Example: start timers, begin animation, play audio, etc.
