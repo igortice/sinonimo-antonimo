@@ -27,18 +27,11 @@ local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites2
 -- Config Global
 ---------------------------------------------------------------------------------
 
-local function to_array( str )
-  local t = {}
-  for i = 1, #str do
-      t[i] = str:sub(i, i)
-  end
-
-  return t
-end
+-- Config background
+---------------------------------------------------------------------------------
 local background
--- Configurar background
-local function config_background( sceneGroup )
 
+local function config_background( sceneGroup )
   background        = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue3"))
   background.x      = display.contentCenterX
   background.y      = display.contentCenterY
@@ -47,7 +40,9 @@ local function config_background( sceneGroup )
 end
 
 -- Config quantidade de questions
+---------------------------------------------------------------------------------
 local quantidade_questions
+
 local function config_quantidade_questions( sceneGroup, event )
   quantidade_questions = #event.params.questions
 end
@@ -102,9 +97,10 @@ end
 
 --  Config lifes
 ---------------------------------------------------------------------------------
-local quantidade_lifes = 3
-local quantidade_erros = 0
-local lifes_imagens = {}
+local quantidade_lifes  = 3
+local quantidade_erros  = 0
+local lifes_imagens     = {}
+
 local function config_lifes( sceneGroup )
   for i=1,quantidade_lifes do
     if not lifes_imagens[i] then
@@ -160,20 +156,13 @@ end
 -- Body
 ---------------------------------------------------------------------------------
 
+-- Variaveis
+---------------------------------------------------------------------------------
 local repostas_ok = 0, pergunta, resposta, resposta_array, pergunta_fase
 local resposta_usuario_array = {}
 
-local function allIndexOf( table, item )
-  result = {}
-  for i=1,#table do
-    if (table[i] == item) then
-      result[#result+1] = i
-    end
-  end
-
-  return result
-end
-
+-- Set respostas
+---------------------------------------------------------------------------------
 local function set_resposta( event, letra )
   resposta        = event.params.questions[repostas_ok + 1].resposta
   resposta_array  = to_array( resposta )
@@ -199,6 +188,8 @@ local function set_resposta( event, letra )
   return result_resposta
 end
 
+-- Check letra
+---------------------------------------------------------------------------------
 local function check_letra( sceneGroup, event, letra )
   if #allIndexOf( resposta_array, letra) == 0 then
     remover_life( sceneGroup )
@@ -209,12 +200,16 @@ local function check_letra( sceneGroup, event, letra )
   return true
 end
 
+-- Set pergunta
+---------------------------------------------------------------------------------
 local function set_pergunta( event )
   pergunta_fase = event.params.questions[repostas_ok + 1].palavra
 
   return pergunta_fase
 end
 
+-- Set questions
+---------------------------------------------------------------------------------
 local function set_question( event, num )
   repostas_ok = num
 
@@ -222,6 +217,7 @@ local function set_question( event, num )
 end
 
 -- Config questions
+---------------------------------------------------------------------------------
 local function config_questions( sceneGroup, event )
   pergunta = display.newText({
      text     = '',
@@ -244,12 +240,14 @@ local function config_questions( sceneGroup, event )
   sceneGroup:insert( pergunta )
 end
 
---Config dicas
+--Config letras body
+---------------------------------------------------------------------------------
 local function config_letras_body( sceneGroup, event )
   local alfabeto              = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
   local all_objects_alfabeto  = {}
 
   -- Config drag letra
+  ---------------------------------------------------------------------------------
   local function config_drag_letra()
     for i = 1, #all_objects_alfabeto do
       local object_alfabeto = all_objects_alfabeto[i]
@@ -270,32 +268,36 @@ local function config_letras_body( sceneGroup, event )
     end
   end
 
-  local function dragBody( event )
+  -- Config drag body
+  ---------------------------------------------------------------------------------
+  local function config_drag_body( event )
     return gameUI.dragBody( event )
   end
 
-  function gerar_letras_etapa()
+  -- Config gerar letras etapas
+  ---------------------------------------------------------------------------------
+  function config_gerar_letras_etapa()
     audio.play( popSound )
+    print_r(resposta_array)
 
-    letra = alfabeto[ math.random( 1, #alfabeto ) ]
-    path_letra = "images/alfabeto/" .. letra .. ".png"
+    letra       = alfabeto[ math.random( 1, #alfabeto ) ]
+    path_letra  = "images/alfabeto/" .. letra .. ".png"
     all_objects_alfabeto[#all_objects_alfabeto + 1] = display.newImage( path_letra )
     local object_alfabeto = all_objects_alfabeto[#all_objects_alfabeto]
-    local pos_x = math.random( 70 , 260)
-    local pos_y = math.random( 200 , 450)
-    object_alfabeto.x = pos_x; object_alfabeto.y = pos_y
-    object_alfabeto.width, object_alfabeto.height = 30, 30
+    object_alfabeto.x = math.random( 70 , 260)
+    object_alfabeto.y = math.random( 200 , 450)
+    object_alfabeto.width, object_alfabeto.height = 20, 20
     object_alfabeto.rotation = math.random( 1, 360 )
-    object_alfabeto.xScale = 0.8; object_alfabeto.yScale = 0.8
+    object_alfabeto.xScale, object_alfabeto.yScale = 0.8, 0.8
     object_alfabeto.letra = letra
 
     transition.to(object_alfabeto, { time = 800, xScale = 2.0, yScale = 2.0, transition = easing.outElastic }) -- "pop" animation
 
     physics.addBody( object_alfabeto, { density=0.6, friction=1 } )
     object_alfabeto.linearDamping  = 0.4
-    object_alfabeto.angularDamping = 0.6
+    object_alfabeto.angularDamping = 1.6
 
-    object_alfabeto:addEventListener( "touch", dragBody )
+    object_alfabeto:addEventListener( "touch", config_drag_body )
   end
 
   Runtime:addEventListener( "enterFrame", config_drag_letra ) -- clean up offscreen disks
@@ -340,7 +342,7 @@ function scene:show( event )
         -- Called when the scene is still off screen (but is about to come on screen).
     elseif ( phase == "did" ) then
       config_count_timer( sceneGroup )
-      gerar_letras_etapa()
+      config_gerar_letras_etapa()
         -- Called when the scene is now on screen.
         -- Insert code here to make the scene come alive.
         -- Example: start timers, begin animation, play audio, etc.

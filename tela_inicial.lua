@@ -7,15 +7,16 @@
 local composer  = require "composer"
 local scene     = composer.newScene()
 
+local background_sheet        = require("bg_sheets")
+local background_sheet_sprite = graphics.newImageSheet( "images/bg_spritesheet.png", background_sheet:getSheet() )
+
 ---------------------------------------------------------------------------------
 -- Config Global
 ---------------------------------------------------------------------------------
 
--- Configurar background
+-- Config background
+---------------------------------------------------------------------------------
 local function config_background( sceneGroup )
-  local background_sheet        = require("bg_sheets")
-  local background_sheet_sprite = graphics.newImageSheet( "images/bg_spritesheet.png", background_sheet:getSheet() )
-
   local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue1"))
   background.x      = centerX
   background.y      = centerY
@@ -24,6 +25,7 @@ local function config_background( sceneGroup )
 end
 
 -- Config global
+---------------------------------------------------------------------------------
 local function config_global( sceneGroup )
   config_background( sceneGroup )
 end
@@ -34,6 +36,7 @@ end
 ---------------------------------------------------------------------------------
 
 -- Config header
+---------------------------------------------------------------------------------
 local function config_header( sceneGroup )
   local textField = display.newText({
      text     = "Sinônimo ou Antônimo",
@@ -52,6 +55,7 @@ end
 ---------------------------------------------------------------------------------
 
 -- Config play
+---------------------------------------------------------------------------------
 local function config_play( sceneGroup )
   local function onIconTouch( self, event )
     if event.phase == "began" then
@@ -78,6 +82,7 @@ local function config_play( sceneGroup )
 end
 
 -- Config body
+---------------------------------------------------------------------------------
 local function config_body( sceneGroup )
   config_play( sceneGroup )
 end
@@ -88,6 +93,7 @@ end
 ---------------------------------------------------------------------------------
 
 -- Config footer
+---------------------------------------------------------------------------------
 local function config_footer( sceneGroup )
   local texto_autor = display.newText( "por Igor Rocha", 0, 0, native.systemFontBold, 12 )
   texto_autor:setFillColor( 255 )
@@ -95,7 +101,7 @@ local function config_footer( sceneGroup )
   sceneGroup:insert( texto_autor )
 end
 
-
+-- "scene:create()"
 function scene:create( event )
   local sceneGroup = self.view
 

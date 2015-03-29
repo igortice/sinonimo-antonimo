@@ -2,9 +2,10 @@ local function main( )
   -- hidden status bar
   display.setStatusBar( display.HiddenStatusBar )
 
-  -- require controller module
   local composer = require "composer"
+
   require 'print_r'
+  require 'functions'
 
   centerX = display.contentCenterX
   centerY = display.contentCenterY

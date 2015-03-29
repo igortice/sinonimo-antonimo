@@ -7,23 +7,28 @@
 local composer  = require "composer"
 local scene     = composer.newScene()
 
+local background_sheet        = require("bg_sheets")
+local background_sheet_sprite = graphics.newImageSheet( "images/bg_spritesheet.png", background_sheet:getSheet() )
+
+local glyphicons        = require("glyphicons")
+local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites2.png", glyphicons:getSheet())
 ---------------------------------------------------------------------------------
 -- Config Global
 ---------------------------------------------------------------------------------
 
 -- Config data questions
+---------------------------------------------------------------------------------
 local data_questions
+
 local function config_data_questions( )
   local json      = require "json"
   local json_data = '[[{"palavra":"casa","resposta":"lar"},{"palavra":"trabalho","resposta":"emprego"}]]'
   data_questions  = json.decode(json_data)
 end
 
--- Configurar background
+-- Config background
+---------------------------------------------------------------------------------
 local function config_background( sceneGroup )
-  local background_sheet        = require("bg_sheets")
-  local background_sheet_sprite = graphics.newImageSheet( "images/bg_spritesheet.png", background_sheet:getSheet() )
-
   local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue2"))
   background.x      = centerX
   background.y      = centerY
@@ -32,6 +37,7 @@ local function config_background( sceneGroup )
 end
 
 -- Config global
+---------------------------------------------------------------------------------
 local function config_global( sceneGroup )
   config_background( sceneGroup )
 
@@ -44,6 +50,7 @@ end
 ---------------------------------------------------------------------------------
 
 -- Config header
+---------------------------------------------------------------------------------
 local function config_header( sceneGroup )
   local texto_head        = display.newText( "Fases", 0, 0, native.systemFontBold, 20 )
   texto_head.x, texto_head.y  = centerX, 50
@@ -55,9 +62,11 @@ end
 ---------------------------------------------------------------------------------
 -- Body
 ---------------------------------------------------------------------------------
-local fases_liberadas = 1
 
 -- Config diplay fases body
+---------------------------------------------------------------------------------
+local fases_liberadas = 1
+
 local function config_display_fases( sceneGroup )
   local function onFaseTouch( self, event )
     if event.phase == "began" then
@@ -97,8 +106,6 @@ local function config_display_fases( sceneGroup )
     disk_yellow.fase        = numero_fase
     sceneGroup:insert( disk_yellow )
 
-    local glyphicons        = require("glyphicons")
-    local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites2.png", glyphicons:getSheet())
     if fases_liberadas < numero_fase then
       local icon      = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("lock"))
       icon.x, icon.y  = disk_yellow.x, disk_yellow.y
@@ -115,11 +122,12 @@ local function config_display_fases( sceneGroup )
 end
 
 -- Config body
+---------------------------------------------------------------------------------
 local function config_body( sceneGroup )
   config_display_fases( sceneGroup )
 end
 
-
+-- "scene:create()"
 function scene:create( event )
   local sceneGroup = self.view
 
