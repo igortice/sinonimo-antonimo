@@ -158,7 +158,8 @@ end
 
 -- Variaveis
 ---------------------------------------------------------------------------------
-local repostas_ok = 0, pergunta, resposta, resposta_array, pergunta_fase
+local retangulo, pergunta, resposta, resposta_array, pergunta_fase
+local repostas_ok = 0
 local resposta_usuario_array = {}
 
 -- Set respostas
@@ -189,10 +190,28 @@ end
 -- Check letra
 ---------------------------------------------------------------------------------
 local function check_letra( sceneGroup, event, letra )
-  if #allIndexOf( resposta_array, letra) == 0 then
-    remover_life( sceneGroup )
+  local function1, function2
+
+  function function1(e)
+    transition.to(retangulo,{time=100, onComplete=function2})
   end
 
+  function function2(e)
+    retangulo:setFillColor( 0 )
+    transition.to(retangulo, { time=100,alpha=0.5 })
+  end
+
+  if #allIndexOf( resposta_array, letra) == 0 then
+    remover_life( sceneGroup )
+    retangulo:setFillColor(255, 0, 0)
+    audio.play( popSound, { loops = 1 } )
+  else
+    retangulo:setFillColor(128, 255, 0)
+    audio.play( popSound )
+  end
+
+  
+  transition.to(retangulo,{time=100,alpha=0.5, onComplete = function1})
   pergunta.text = pergunta_fase:upper( ) .. "\n" .. set_resposta( event, letra ):upper( )
 
   return true
@@ -228,7 +247,7 @@ local function config_questions( sceneGroup, event )
 
   set_question( event, repostas_ok )
 
-  local retangulo = display.newRect( centerX, pergunta.y, _W - 100, 100 )
+  retangulo = display.newRect( centerX, pergunta.y, _W - 100, 100 )
   retangulo.strokeWidth = 3
   retangulo.alpha       = 0.5
   retangulo:setFillColor( 0 )
@@ -276,7 +295,7 @@ local function config_letras_body( sceneGroup, event )
   ---------------------------------------------------------------------------------
   function config_gerar_letras_etapa()
     local quantidade_letras_body  = #resposta_array * 2
-    local letras_body             = resposta_array
+    local letras_body             = table.copy(resposta_array)
     while #letras_body ~= quantidade_letras_body do
         letras_body[#letras_body+1] = alfabeto[ math.random( 1, #alfabeto ) ]
     end
@@ -356,7 +375,6 @@ end
 
 -- "scene:hide()"
 function scene:hide( event )
-
     local sceneGroup  = self.view
     local phase       = event.phase
 

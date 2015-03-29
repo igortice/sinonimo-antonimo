@@ -17,15 +17,15 @@ end
 -- All Index Of Table
 --
 ---------------------------------------------------------------------------------
-function allIndexOf( table, item )
-  result = {}
-  for i=1,#table do
-    if (table[i] == item) then
-      result[#result+1] = i
+function allIndexOf( t, item )
+  local r = {}
+  for i=1,#t do
+    if (t[i] == item) then
+      r[#r+1] = i
     end
   end
 
-  return result
+  return r
 end
 
 ---------------------------------------------------------------------------------
