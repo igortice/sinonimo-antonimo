@@ -65,6 +65,7 @@ end
 ---------------------------------------------------------------------------------
 
 -- Config count timer
+---------------------------------------------------------------------------------
 local function config_count_timer( sceneGroup )
   local displayTime = display.newText({
      text     = "00:00",
@@ -100,6 +101,7 @@ local function config_count_timer( sceneGroup )
 end
 
 --  Config lifes
+---------------------------------------------------------------------------------
 local quantidade_lifes = 3
 local quantidade_erros = 0
 local lifes_imagens = {}
@@ -110,7 +112,7 @@ local function config_lifes( sceneGroup )
     elseif quantidade_erros >= i then
       lifes_imagens[i]:removeSelf()
       lifes_imagens[i]      = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart_empty"))
-      transition.to(lifes_imagens[i], { time = 1500, xScale = 1.5, yScale = 1.5, transition = easing.outElastic  }) -- "pop" animation
+      transition.to(lifes_imagens[i], { time = 800, xScale = 1.5, yScale = 1.5, transition = easing.outElastic  }) -- "pop" animation
     end
 
     lifes_imagens[i].width, lifes_imagens[i].height = 15, 15
@@ -121,6 +123,7 @@ local function config_lifes( sceneGroup )
 end
 
 -- Remover life
+---------------------------------------------------------------------------------
 local function remover_life( sceneGroup )
     if (quantidade_erros <= quantidade_lifes) then
       quantidade_erros = quantidade_erros + 1
@@ -132,6 +135,8 @@ local function remover_life( sceneGroup )
     return false
 end
 
+-- Config name fase
+---------------------------------------------------------------------------------
 local function config_nome_fase( sceneGroup, event )
   local textField = display.newText({
      text     = event.params.level,
@@ -143,6 +148,7 @@ local function config_nome_fase( sceneGroup, event )
 end
 
 -- Config header
+---------------------------------------------------------------------------------
 local function config_header( sceneGroup, event )
   config_nome_fase( sceneGroup, event )
 
@@ -154,17 +160,33 @@ end
 -- Body
 ---------------------------------------------------------------------------------
 
-local repostas_ok = 1, pergunta, resposta, resposta_array, pergunta_fase
+local repostas_ok = 0, pergunta, resposta, resposta_array, pergunta_fase
 local resposta_usuario_array = {}
+
+local function allIndexOf( table, item )
+  result = {}
+  for i=1,#table do
+    if (table[i] == item) then
+      result[#result+1] = i
+    end
+  end
+
+  return result
+end
 
 local function set_resposta( event, letra )
   resposta        = event.params.questions[repostas_ok + 1].resposta
   resposta_array  = to_array( resposta )
   result_resposta = ''
-  index_letra = table.indexOf(resposta_array, letra)
-  if (index_letra ~= nil) then
-    resposta_usuario_array[index_letra] = letra
+  local indexs_letra = allIndexOf(resposta_array, letra)
+  for i=1,#indexs_letra do
+    if (resposta_usuario_array[indexs_letra[i]] == nil) then
+      resposta_usuario_array[indexs_letra[i]] = letra
+      break
+    end
+
   end
+
 
   for i=1,#resposta do
     local palavra = '__'
@@ -178,7 +200,8 @@ local function set_resposta( event, letra )
 end
 
 local function check_letra( sceneGroup, event, letra )
-  if table.indexOf(resposta_array, letra) == nil then
+  print_r(#allIndexOf( resposta_array, letra))
+  if #allIndexOf( resposta_array, letra) == 0 then
     remover_life( sceneGroup )
   end
 
@@ -263,6 +286,7 @@ local function config_letras_body( sceneGroup, event )
       audio.play( popSound )
 
       letra = alfabeto[ math.random( 1, #alfabeto ) ]
+      -- letra = 'e'
       path_letra = "images/alfabeto/" .. letra .. ".png"
       allDisks[#allDisks + 1] = display.newImage( path_letra )
       local disk = allDisks[#allDisks]
@@ -272,7 +296,7 @@ local function config_letras_body( sceneGroup, event )
       disk.xScale = 0.8; disk.yScale = 0.8
       disk.letra = letra
 
-      transition.to(disk, { time = 1500, xScale = 2.0, yScale = 2.0, transition = easing.outElastic }) -- "pop" animation
+      transition.to(disk, { time = 800, xScale = 2.0, yScale = 2.0, transition = easing.outElastic }) -- "pop" animation
 
       physics.addBody( disk, { density=0.6, friction=1 } )
       disk.linearDamping  = 0.4
