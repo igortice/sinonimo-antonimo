@@ -7,6 +7,22 @@
 local composer  = require "composer"
 local scene     = composer.newScene()
 
+local physics   = require("physics")
+local gameUI    = require("gameUI")
+-- physics.setDrawMode( "hybrid" )
+
+physics.start()
+physics.setGravity( 0, 0 ) -- no gravity in any direction
+
+system.activate( "multitouch" )
+
+
+local background_sheet        = require("bg_sheets")
+local background_sheet_sprite = graphics.newImageSheet( "images/bg_spritesheet.png", background_sheet:getSheet() )
+
+local glyphicons        = require("glyphicons")
+local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites2.png", glyphicons:getSheet())
+
 ---------------------------------------------------------------------------------
 -- Config Global
 ---------------------------------------------------------------------------------
@@ -22,10 +38,8 @@ end
 local background
 -- Configurar background
 local function config_background( sceneGroup )
-  local background_sheet        = require("bg_sheets")
-  local background_sheet_sprite = graphics.newImageSheet( "images/bg_spritesheet.png", background_sheet:getSheet() )
 
-  background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue3"))
+  background        = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue3"))
   background.x      = display.contentCenterX
   background.y      = display.contentCenterY
 
@@ -88,21 +102,34 @@ end
 --  Config lifes
 local quantidade_lifes = 3
 local quantidade_erros = 0
+local lifes_imagens = {}
 local function config_lifes( sceneGroup )
-  local glyphicons        = require("glyphicons")
-  local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites2.png", glyphicons:getSheet())
-
   for i=1,quantidade_lifes do
-    local icon      = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart"))
-
-    if quantidade_erros >= i then
-      icon      = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart_empty"))
+    if not lifes_imagens[i] then
+      lifes_imagens[i]      = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart"))
+    elseif quantidade_erros >= i then
+      lifes_imagens[i]:removeSelf()
+      lifes_imagens[i]      = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart_empty"))
+      transition.to(lifes_imagens[i], { time = 1500, xScale = 1.5, yScale = 1.5, transition = easing.outElastic  }) -- "pop" animation
     end
 
-    icon.width, icon.height = 15, 15
-    icon.x, icon.y  = _W - 115 + (i*20), 20
-    sceneGroup:insert( icon )
+    lifes_imagens[i].width, lifes_imagens[i].height = 15, 15
+    lifes_imagens[i].x, lifes_imagens[i].y  = _W - 115 + (i*20), 20
+
+    sceneGroup:insert( lifes_imagens[i] )
   end
+end
+
+-- Remover life
+local function remover_life( sceneGroup )
+    if (quantidade_erros <= quantidade_lifes) then
+      quantidade_erros = quantidade_erros + 1
+      config_lifes( sceneGroup )
+
+      return true
+    end
+
+    return false
 end
 
 local function config_nome_fase( sceneGroup, event )
@@ -127,25 +154,43 @@ end
 -- Body
 ---------------------------------------------------------------------------------
 
-local repostas_ok = 0, pergunta, resposta, resposta_array
+local repostas_ok = 1, pergunta, resposta, resposta_array, pergunta_fase
+local resposta_usuario_array = {}
 
-local function set_resposta( event )
+local function set_resposta( event, letra )
   resposta        = event.params.questions[repostas_ok + 1].resposta
   resposta_array  = to_array( resposta )
   result_resposta = ''
+  index_letra = table.indexOf(resposta_array, letra)
+  if (index_letra ~= nil) then
+    resposta_usuario_array[index_letra] = letra
+  end
+
   for i=1,#resposta do
     local palavra = '__'
-    -- if i == 2 then
-    --   palavra = resposta_array[i]
-    -- end
+    if resposta_usuario_array and resposta_usuario_array[i] ~= nil then
+      palavra = resposta_usuario_array[i]
+    end
     result_resposta = result_resposta .. palavra .. ' '
   end
 
   return result_resposta
 end
 
+local function check_letra( sceneGroup, event, letra )
+  if table.indexOf(resposta_array, letra) == nil then
+    remover_life( sceneGroup )
+  end
+
+  pergunta.text = pergunta_fase:upper( ) .. "\n" .. set_resposta( event, letra ):upper( )
+
+  return true
+end
+
 local function set_pergunta( event )
-  return event.params.questions[repostas_ok + 1].palavra
+  pergunta_fase = event.params.questions[repostas_ok + 1].palavra
+
+  return pergunta_fase
 end
 
 local function set_question( event, num )
@@ -179,15 +224,6 @@ end
 
 --Config dicas
 local function config_letras_body( sceneGroup, event )
-  local physics   = require("physics")
-  local gameUI    = require("gameUI")
-  local easingx   = require("easingx")
-  -- physics.setDrawMode( "hybrid" )
-
-  physics.start()
-  physics.setGravity( 0, 0 ) -- no gravity in any direction
-
-  system.activate( "multitouch" )
 
   local alfabeto = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
   -- for i=1,#alfabeto do
@@ -202,8 +238,10 @@ local function config_letras_body( sceneGroup, event )
       if (oneDisk and oneDisk.x) then
         if oneDisk.y < 154 then
           print( oneDisk.letra )
+          check_letra( sceneGroup, event, oneDisk.letra )
           oneDisk:removeSelf()
           table.remove( allDisks, i )
+
         end
         if oneDisk.x < 10 or oneDisk.x > _W - 10 or oneDisk.y < -1 or oneDisk.y > _H - 10 then
           print( 'saiu' )
@@ -234,10 +272,10 @@ local function config_letras_body( sceneGroup, event )
       disk.xScale = 0.8; disk.yScale = 0.8
       disk.letra = letra
 
-      transition.to(disk, { time = 1500, xScale = 2.0, yScale = 2.0, transition = easingx.easeOutElastic }) -- "pop" animation
+      transition.to(disk, { time = 1500, xScale = 2.0, yScale = 2.0, transition = easing.outElastic }) -- "pop" animation
 
-      physics.addBody( disk, { density=0.6, friction=1} )
-      disk.linearDamping = 0.4
+      physics.addBody( disk, { density=0.6, friction=1 } )
+      disk.linearDamping  = 0.4
       disk.angularDamping = 0.6
 
       disk:addEventListener( "touch", dragBody ) -- make object draggable
