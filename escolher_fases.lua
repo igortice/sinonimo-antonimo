@@ -164,6 +164,7 @@ function scene:hide( event )
         -- Example: stop timers, stop animation, stop audio, etc.
     elseif ( phase == "did" ) then
         -- Called immediately after scene goes off screen.
+        composer.removeScene( "escolher_fases" )
     end
 end
 

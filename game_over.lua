@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------
 --
--- tela_inicial.lua
+-- game_over.lua
 --
 ---------------------------------------------------------------------------------
 
@@ -38,15 +38,6 @@ end
 -- Config header
 ---------------------------------------------------------------------------------
 local function config_header( sceneGroup )
-  local textField = display.newText({
-     text     = "Sinônimo ou Antônimo",
-     x        = centerX,
-     y        = 70,
-     width    = 100,
-     fontSize = 20,
-     align    = "center"
-  })
-  sceneGroup:insert( textField )
 end
 
 
@@ -54,9 +45,16 @@ end
 -- Body
 ---------------------------------------------------------------------------------
 
--- Config play
+-- Config body
 ---------------------------------------------------------------------------------
-local function config_play( sceneGroup )
+local function config_body( sceneGroup )
+  local texto_game_over = display.newText( "Game Over", 0, 0, native.systemFontBold, 24 )
+  texto_game_over:setFillColor( 255 )
+  texto_game_over.xScale, texto_game_over.yScale = 0, 0
+  texto_game_over.x, texto_game_over.y = centerX, centerY - 100
+  transition.to(texto_game_over, { time = 1800, delay = 800,xScale = 2.0, yScale = 2.0, transition = easing.outElastic })
+  sceneGroup:insert( texto_game_over )
+
   local function onIconTouch( self, event )
     if event.phase == "began" then
       audio.play( popSound )
@@ -69,22 +67,16 @@ local function config_play( sceneGroup )
     return true
   end
 
-  local disk_green      = display.newImage("images/puck_green.png")
-  disk_green.x, disk_green.y  = centerX, centerY
-  disk_green.touch      = onIconTouch
-  disk_green:addEventListener( "touch", disk_green )
-  sceneGroup:insert( disk_green )
+  local disk_red      = display.newImage("images/puck_red.png")
+  disk_red.x, disk_red.y  = centerX, centerY
+  disk_red.touch      = onIconTouch
+  disk_red:addEventListener( "touch", disk_red )
+  sceneGroup:insert( disk_red )
 
   local texto_iniciar = display.newText( "Jogar", 0, 0, native.systemFontBold, 24 )
   texto_iniciar:setFillColor( 255 )
-  texto_iniciar.x, texto_iniciar.y = centerX, centerY
+  texto_iniciar.x, texto_iniciar.y = disk_red.x, disk_red.y
   sceneGroup:insert( texto_iniciar )
-end
-
--- Config body
----------------------------------------------------------------------------------
-local function config_body( sceneGroup )
-  config_play( sceneGroup )
 end
 
 
@@ -95,10 +87,6 @@ end
 -- Config footer
 ---------------------------------------------------------------------------------
 local function config_footer( sceneGroup )
-  local texto_autor = display.newText( "por Igor Rocha", 0, 0, native.systemFontBold, 12 )
-  texto_autor:setFillColor( 255 )
-  texto_autor.x, texto_autor.y = centerX, _H - 20
-  sceneGroup:insert( texto_autor )
 end
 
 -- "scene:create()"
@@ -141,7 +129,6 @@ function scene:hide( event )
         -- Example: stop timers, stop animation, stop audio, etc.
     elseif ( phase == "did" ) then
         -- Called immediately after scene goes off screen.
-        composer.removeScene( "tela_inicial" )
     end
 end
 

@@ -125,6 +125,10 @@ local function remover_life( sceneGroup )
       quantidade_erros = quantidade_erros + 1
       config_lifes( sceneGroup )
 
+      if (quantidade_erros == quantidade_lifes) then
+        composer.gotoScene( "game_over", { effect = "zoomInOutFade", time = 500 } )
+      end
+
       return true
     end
 
@@ -204,13 +208,11 @@ local function check_letra( sceneGroup, event, letra )
   if #allIndexOf( resposta_array, letra) == 0 then
     remover_life( sceneGroup )
     retangulo:setFillColor(255, 0, 0)
-    audio.play( popSound, { loops = 1 } )
   else
     retangulo:setFillColor(128, 255, 0)
-    audio.play( popSound )
   end
 
-  
+  audio.play( popSound )
   transition.to(retangulo,{time=100,alpha=0.5, onComplete = function1})
   pergunta.text = pergunta_fase:upper( ) .. "\n" .. set_resposta( event, letra ):upper( )
 
@@ -294,7 +296,7 @@ local function config_letras_body( sceneGroup, event )
   -- Config gerar letras etapas
   ---------------------------------------------------------------------------------
   function config_gerar_letras_etapa()
-    local quantidade_letras_body  = #resposta_array * 2
+    local quantidade_letras_body  = #resposta_array * 3
     local letras_body             = table.copy(resposta_array)
     while #letras_body ~= quantidade_letras_body do
         letras_body[#letras_body+1] = alfabeto[ math.random( 1, #alfabeto ) ]
@@ -323,6 +325,7 @@ local function config_letras_body( sceneGroup, event )
       object_alfabeto.angularDamping = 1.6
 
       object_alfabeto:addEventListener( "touch", config_drag_body )
+      sceneGroup:insert( object_alfabeto )
     end
   end
 
@@ -384,7 +387,7 @@ function scene:hide( event )
         -- Example: stop timers, stop animation, stop audio, etc.
     elseif ( phase == "did" ) then
         -- Called immediately after scene goes off screen.
-        composer.removeScene( "tela_inicial", true )
+        composer.removeScene( "fase" )
     end
 end
 
