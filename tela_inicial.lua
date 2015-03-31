@@ -38,13 +38,15 @@ end
 -- Config header
 ---------------------------------------------------------------------------------
 local function config_header( sceneGroup )
+
   local textField = display.newText({
-     text     = "Sinônimo ou Antônimo",
+     text     = "Sinônimo \nx \nAntônimo",
      x        = centerX,
-     y        = 70,
-     width    = 100,
-     fontSize = 20,
-     align    = "center"
+     y        = 120,
+     width    = 140,
+     fontSize = 30,
+     align    = "center",
+     font     = native.systemFontBold
   })
   sceneGroup:insert( textField )
 end
@@ -69,15 +71,15 @@ local function config_play( sceneGroup )
     return true
   end
 
-  local disk_green      = display.newImage("images/puck_green.png")
-  disk_green.x, disk_green.y  = centerX, centerY
-  disk_green.touch      = onIconTouch
-  disk_green:addEventListener( "touch", disk_green )
-  sceneGroup:insert( disk_green )
+  local disk_red      = display.newImage("images/puck_green.png")
+  disk_red.x, disk_red.y  = centerX, centerY + 70
+  disk_red.touch      = onIconTouch
+  disk_red:addEventListener( "touch", disk_red )
+  sceneGroup:insert( disk_red )
 
   local texto_iniciar = display.newText( "Jogar", 0, 0, native.systemFontBold, 24 )
   texto_iniciar:setFillColor( 255 )
-  texto_iniciar.x, texto_iniciar.y = centerX, centerY
+  texto_iniciar.x, texto_iniciar.y = centerX, disk_red.y
   sceneGroup:insert( texto_iniciar )
 end
 

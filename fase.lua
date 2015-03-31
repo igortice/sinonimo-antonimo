@@ -280,8 +280,11 @@ local function config_letras_body( sceneGroup, event )
         end
         if object_alfabeto.x < 10 or object_alfabeto.x > _W - 10 or object_alfabeto.y < -1 or object_alfabeto.y > _H - 10 then
           print( 'saiu' )
-          object_alfabeto:removeSelf()
-          table.remove( all_objects_alfabeto, i )
+          -- object_alfabeto:removeSelf()
+          object_alfabeto.isAwake = false
+          object_alfabeto.x = math.random( 70 , 260)
+          object_alfabeto.y = math.random( 200 , 450)
+          -- table.remove( all_objects_alfabeto, i )
         end
       end
     end
