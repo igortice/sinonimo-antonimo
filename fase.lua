@@ -163,13 +163,13 @@ end
 -- Variaveis
 ---------------------------------------------------------------------------------
 local retangulo, pergunta, resposta, resposta_array, pergunta_fase
-local repostas_ok = 0
+local respostas_ok = 0
 local resposta_usuario_array = {}
 
 -- Set respostas
 ---------------------------------------------------------------------------------
 local function set_resposta( event, letra )
-  resposta            = event.params.questions[repostas_ok + 1].resposta
+  resposta            = event.params.questions[respostas_ok + 1].resposta
   resposta_array      = to_array( resposta )
   result_resposta     = ''
   local indexs_letra  = allIndexOf(resposta_array, letra)
@@ -215,14 +215,16 @@ local function check_letra( sceneGroup, event, letra )
   audio.play( popSound )
   transition.to(retangulo,{time=100,alpha=0.5, onComplete = function1})
   pergunta.text = pergunta_fase:upper( ) .. "\n" .. set_resposta( event, letra ):upper( )
-
+  if (table.concat(resposta_usuario_array, "") == resposta) then
+    proxima_fase( event )
+  end
   return true
 end
 
 -- Set pergunta
 ---------------------------------------------------------------------------------
 local function set_pergunta( event )
-  pergunta_fase = event.params.questions[repostas_ok + 1].palavra
+  pergunta_fase = event.params.questions[respostas_ok + 1].palavra
 
   return pergunta_fase
 end
@@ -230,9 +232,15 @@ end
 -- Set questions
 ---------------------------------------------------------------------------------
 local function set_question( event, num )
-  repostas_ok = num
+  respostas_ok = num
 
   pergunta.text = set_pergunta( event ):upper( ) .. "\n" .. set_resposta( event ):upper( )
+end
+-- Set questions
+---------------------------------------------------------------------------------
+function proxima_fase( event )
+  respostas_ok = respostas_ok + 1
+  set_question( event, 1 )
 end
 
 -- Config questions
@@ -247,7 +255,7 @@ local function config_questions( sceneGroup, event )
      align    = "center"
   })
 
-  set_question( event, repostas_ok )
+  set_question( event, respostas_ok )
 
   retangulo = display.newRect( centerX, pergunta.y, _W - 100, 100 )
   retangulo.strokeWidth = 3
@@ -264,6 +272,7 @@ end
 local function config_letras_body( sceneGroup, event )
   local alfabeto              = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
   local all_objects_alfabeto  = {}
+  local regiao_letras         = {xi="70", xf="260", yi="200", yf="450"}
 
   -- Config drag letra
   ---------------------------------------------------------------------------------
@@ -280,10 +289,11 @@ local function config_letras_body( sceneGroup, event )
         end
         if object_alfabeto.x < 10 or object_alfabeto.x > _W - 10 or object_alfabeto.y < -1 or object_alfabeto.y > _H - 10 then
           print( 'saiu' )
+          audio.play( popSound )
           -- object_alfabeto:removeSelf()
           object_alfabeto.isAwake = false
-          object_alfabeto.x = math.random( 70 , 260)
-          object_alfabeto.y = math.random( 200 , 450)
+          object_alfabeto.x = math.random( regiao_letras.xi , regiao_letras.xf)
+          object_alfabeto.y = math.random( regiao_letras.yi , regiao_letras.yf)
           -- table.remove( all_objects_alfabeto, i )
         end
       end
@@ -314,8 +324,8 @@ local function config_letras_body( sceneGroup, event )
       path_letra  = "images/alfabeto/" .. letra .. ".png"
       all_objects_alfabeto[#all_objects_alfabeto + 1] = display.newImage( path_letra )
       local object_alfabeto = all_objects_alfabeto[#all_objects_alfabeto]
-      object_alfabeto.x = math.random( 70 , 260)
-      object_alfabeto.y = math.random( 200 , 450)
+      object_alfabeto.x = math.random( regiao_letras.xi , regiao_letras.xf)
+      object_alfabeto.y = math.random( regiao_letras.yi , regiao_letras.yf)
       object_alfabeto.width, object_alfabeto.height = 20, 20
       object_alfabeto.rotation = math.random( 1, 360 )
       object_alfabeto.xScale, object_alfabeto.yScale = 0.8, 0.8
