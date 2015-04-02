@@ -41,17 +41,23 @@ end
 
 -- Config quantidade de questions
 ---------------------------------------------------------------------------------
-local quantidade_questions
+local questions, quantidade_questions, etapa, tempo_inicial, tempo_inicial_seconds, quantidade_erros
 
-local function config_quantidade_questions( sceneGroup, event )
-  quantidade_questions = #event.params.questions
+local function config_params_etapa( sceneGroup, event )
+  questions             = event.params.questions
+  quantidade_questions  = #questions
+  etapa                 = event.params.etapa
+  tempo_inicial         = event.params.tempo
+  quantidade_erros      = event.params.quantidade_erros
+  local tempo = split(tempo_inicial, ':')
+  tempo_inicial_seconds = (tonumber( tempo[1] ) * 60) + (tonumber( tempo[2] ))
 end
 
 -- Config global
 local function config_global( sceneGroup, event )
   config_background( sceneGroup )
 
-  config_quantidade_questions( sceneGroup, event )
+  config_params_etapa( sceneGroup, event )
 end
 
 
@@ -62,8 +68,8 @@ end
 -- Config count timer
 ---------------------------------------------------------------------------------
 local function config_count_timer( sceneGroup )
-  local displayTime = display.newText({
-     text     = "00:00",
+  displayTime = display.newText({
+     text     = tempo_inicial,
      x        = centerX,
      y        = 20,
      width    = _W - 100,
@@ -72,7 +78,7 @@ local function config_count_timer( sceneGroup )
   })
   sceneGroup:insert( displayTime )
 
-  local levelTime = 0
+  local levelTime = tempo_inicial_seconds
   local modf      = math.modf
   local function checkTime(event)
     levelTime           = levelTime + 1
@@ -98,14 +104,15 @@ end
 --  Config lifes
 ---------------------------------------------------------------------------------
 local quantidade_lifes  = 3
-local quantidade_erros  = 0
 local lifes_imagens     = {}
 
 local function config_lifes( sceneGroup )
   for i=1,quantidade_lifes do
     if not lifes_imagens[i] then
       lifes_imagens[i]      = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart"))
-    elseif quantidade_erros >= i then
+    end
+
+    if quantidade_erros >= i then
       lifes_imagens[i]:removeSelf()
       lifes_imagens[i]      = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart_empty"))
       transition.to(lifes_imagens[i], { time = 800, xScale = 1.5, yScale = 1.5, transition = easing.outElastic  }) -- "pop" animation
@@ -139,7 +146,7 @@ end
 ---------------------------------------------------------------------------------
 local function config_nome_fase( sceneGroup, event )
   local textField = display.newText({
-     text     = event.params.level,
+     text     = 'Fase:' .. event.params.fase,
      x        = centerX,
      y        = 20,
      fontSize = 20
@@ -163,13 +170,12 @@ end
 -- Variaveis
 ---------------------------------------------------------------------------------
 local retangulo, pergunta, resposta, resposta_array, pergunta_fase
-local respostas_ok = 0
 local resposta_usuario_array = {}
 
 -- Set respostas
 ---------------------------------------------------------------------------------
 local function set_resposta( event, letra )
-  resposta            = event.params.questions[respostas_ok + 1].resposta
+  resposta            = event.params.questions[etapa].resposta
   resposta_array      = to_array( resposta )
   result_resposta     = ''
   local indexs_letra  = allIndexOf(resposta_array, letra)
@@ -224,23 +230,21 @@ end
 -- Set pergunta
 ---------------------------------------------------------------------------------
 local function set_pergunta( event )
-  pergunta_fase = event.params.questions[respostas_ok + 1].palavra
+  pergunta_fase = event.params.questions[etapa].palavra
 
   return pergunta_fase
 end
 
 -- Set questions
 ---------------------------------------------------------------------------------
-local function set_question( event, num )
-  respostas_ok = num
-
+local function set_question( event )
   pergunta.text = set_pergunta( event ):upper( ) .. "\n" .. set_resposta( event ):upper( )
 end
 -- Set questions
 ---------------------------------------------------------------------------------
 function proxima_fase( event )
-  respostas_ok = respostas_ok + 1
-  set_question( event, 1 )
+
+    return true
 end
 
 -- Config questions
@@ -255,7 +259,7 @@ local function config_questions( sceneGroup, event )
      align    = "center"
   })
 
-  set_question( event, respostas_ok )
+  set_question( event )
 
   retangulo = display.newRect( centerX, pergunta.y, _W - 100, 100 )
   retangulo.strokeWidth = 3

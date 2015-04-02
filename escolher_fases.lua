@@ -75,7 +75,13 @@ local function config_display_fases( sceneGroup )
       local options = {
           effect  = "zoomInOutFade",
           time    = 500,
-          params  = { level="Fase " .. self.fase, questions = data_questions[self.fase]}
+          params  = {
+            fase              = self.fase,
+            etapa             = 2,
+            tempo             = "00:00",
+            questions         = data_questions[self.fase],
+            quantidade_erros  = 0
+          }
       }
       composer.gotoScene( "fase", options )
     elseif event.phase == "ended" or event.phase == "cancelled" then
