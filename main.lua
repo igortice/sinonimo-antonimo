@@ -1,21 +1,43 @@
+---------------------------------------------------------------------------------
+--
+-- main.lua
+--
+---------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------
+-- Function Main
+---------------------------------------------------------------------------------
 local function main( )
-  -- hidden status bar
-  display.setStatusBar( display.HiddenStatusBar )
-
-  local composer = require "composer"
-
+  -- Requires globais
+  ---------------------------------------------------------------------------------
   require 'print_r'
   require 'functions'
 
-  centerX = display.contentCenterX
-  centerY = display.contentCenterY
-  _W = display.contentWidth
-  _H = display.contentHeight
 
-  popSound = audio.loadSound ("sounds/pop2_wav.wav")
+  -- Hidden status bar
+  ---------------------------------------------------------------------------------
+  display.setStatusBar( display.HiddenStatusBar )
 
-  -- load first scene
-  composer.gotoScene( "escolher_fases", { effect = "zoomInOutFade", time = 500 } )
+
+  -- Variaveis globais
+  ---------------------------------------------------------------------------------
+  centerX   = display.contentCenterX
+  centerY   = display.contentCenterY
+
+  _W        = display.contentWidth
+  _H        = display.contentHeight
+
+  popSound  = audio.loadSound ("sounds/pop2_wav.wav")
+
+
+  -- Load tela inicial
+  ---------------------------------------------------------------------------------
+  local composer = require "composer"
+  composer.gotoScene( "tela_inicial", { effect = "zoomInOutFade", time = 500 } )
 end
 
-main()
+
+---------------------------------------------------------------------------------
+-- Init Function Main
+---------------------------------------------------------------------------------
+main( )

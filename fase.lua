@@ -246,8 +246,18 @@ end
 -- Set questions
 ---------------------------------------------------------------------------------
 function proxima_fase( event )
-
-    return true
+    local options = {
+        effect  = "flipFadeOutIn",
+        params  = {
+          fase              = 1,
+          etapa             = 2,
+          tempo             = displayTime.text,
+          questions         = questions,
+          quantidade_erros  = quantidade_erros
+        }
+    }
+    composer.gotoScene( "escolher_fases", options )
+  return true
 end
 
 -- Config questions
@@ -391,9 +401,14 @@ function scene:show( event )
         -- Called when the scene is now on screen.
         -- Insert code here to make the scene come alive.
         -- Example: start timers, begin animation, play audio, etc.
+
+      composer.removeScene( "escolher_fases" )
+
       config_count_timer( sceneGroup )
 
       config_gerar_letras_etapa()
+
+
     end
 end
 
@@ -408,7 +423,6 @@ function scene:hide( event )
         -- Example: stop timers, stop animation, stop audio, etc.
     elseif ( phase == "did" ) then
         -- Called immediately after scene goes off screen.
-        composer.removeScene( "fase" )
     end
 end
 
