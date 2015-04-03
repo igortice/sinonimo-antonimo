@@ -67,23 +67,23 @@ local function config_play( sceneGroup )
     if event.phase == "began" then
       audio.play( popSound )
 
-      composer.gotoScene( "escolher_fases", { effect = "zoomInOutFade", time = 500 } )
+      composer.gotoScene( "escolher_fases", { effect = "zoomInOutFade" } )
     end
 
     return
   end
 
-  local disk_red          = display.newImage("images/puck_yellow.png")
-  disk_red.x, disk_red.y  = centerX, centerY + 50
-  disk_red.touch          = onIconTouch
-  disk_red.alpha          = 0.9
-  disk_red.width, disk_red.height         = 80, 80
-  disk_red:addEventListener( "touch", disk_red )
-  sceneGroup:insert( disk_red )
+  local disk_yellow                       = display.newImage("images/puck_yellow.png")
+  disk_yellow.x, disk_yellow.y            = centerX, centerY + 50
+  disk_yellow.touch                       = onIconTouch
+  disk_yellow.alpha                       = 0.9
+  disk_yellow.width, disk_yellow.height   = 80, 80
+  disk_yellow:addEventListener( "touch", disk_yellow )
+  sceneGroup:insert( disk_yellow )
 
   local texto_iniciar = display.newText( "Jogar", 0, 0, native.systemFontBold, 22 )
   texto_iniciar:setFillColor( 255 )
-  texto_iniciar.x, texto_iniciar.y = centerX, disk_red.y
+  texto_iniciar.x, texto_iniciar.y = centerX, disk_yellow.y
   sceneGroup:insert( texto_iniciar )
 
   return
@@ -127,6 +127,8 @@ function scene:create( event )
   config_body( sceneGroup )
 
   config_footer( sceneGroup )
+
+  return
 end
 
 
@@ -134,16 +136,18 @@ end
 -- "scene:show()"
 ---------------------------------------------------------------------------------
 function scene:show( event )
-    local sceneGroup  = self.view
-    local phase       = event.phase
+  local sceneGroup  = self.view
+  local phase       = event.phase
 
-    if ( phase == "will" ) then
-        -- Called when the scene is still off screen (but is about to come on screen).
-    elseif ( phase == "did" ) then
-        -- Called when the scene is now on screen.
-        -- Insert code here to make the scene come alive.
-        -- Example: start timers, begin animation, play audio, etc.
-    end
+  if ( phase == "will" ) then
+    -- Called when the scene is still off screen (but is about to come on screen).
+  elseif ( phase == "did" ) then
+    -- Called when the scene is now on screen.
+    -- Insert code here to make the scene come alive.
+    -- Example: start timers, begin animation, play audio, etc.
+  end
+
+  return
 end
 
 
@@ -151,16 +155,18 @@ end
 -- "scene:hide()"
 ---------------------------------------------------------------------------------
 function scene:hide( event )
-    local sceneGroup  = self.view
-    local phase       = event.phase
+  local sceneGroup  = self.view
+  local phase       = event.phase
 
-    if ( phase == "will" ) then
-        -- Called when the scene is on screen (but is about to go off screen).
-        -- Insert code here to "pause" the scene.
-        -- Example: stop timers, stop animation, stop audio, etc.
-    elseif ( phase == "did" ) then
-        -- Called immediately after scene goes off screen.
-    end
+  if ( phase == "will" ) then
+    -- Called when the scene is on screen (but is about to go off screen).
+    -- Insert code here to "pause" the scene.
+    -- Example: stop timers, stop animation, stop audio, etc.
+  elseif ( phase == "did" ) then
+    -- Called immediately after scene goes off screen.
+  end
+
+  return
 end
 
 
@@ -168,10 +174,12 @@ end
 -- "scene:destroy()"
 ---------------------------------------------------------------------------------
 function scene:destroy( event )
-    local sceneGroup = self.view
-    -- Called prior to the removal of scene's view ("sceneGroup").
-    -- Insert code here to clean up the scene.
-    -- Example: remove display objects, save state, etc.
+  local sceneGroup = self.view
+  -- Called prior to the removal of scene's view ("sceneGroup").
+  -- Insert code here to clean up the scene.
+  -- Example: remove display objects, save state, etc.
+
+  return
 end
 
 
