@@ -7,9 +7,6 @@
 local composer  = require "composer"
 local scene     = composer.newScene()
 
-local background_sheet        = require("bg_sheets")
-local background_sheet_sprite = graphics.newImageSheet( "images/bg_spritesheet.png", background_sheet:getSheet() )
-
 local glyphicons        = require("glyphicons")
 local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites2.png", glyphicons:getSheet())
 ---------------------------------------------------------------------------------

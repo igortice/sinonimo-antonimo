@@ -14,6 +14,12 @@ local function main( )
   require 'functions'
 
 
+  -- Background global
+  ---------------------------------------------------------------------------------
+  background_sheet        = require("bg_sheets")
+  background_sheet_sprite = graphics.newImageSheet( "images/bg_spritesheet.png", background_sheet:getSheet() )
+
+
   -- Hidden status bar
   ---------------------------------------------------------------------------------
   display.setStatusBar( display.HiddenStatusBar )
