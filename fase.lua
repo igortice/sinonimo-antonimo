@@ -39,10 +39,21 @@ local function config_background( sceneGroup )
   sceneGroup:insert( background )
 end
 
--- Config quantidade de questions
+-- Config variables
 ---------------------------------------------------------------------------------
-local questions, quantidade_questions, etapa, tempo_inicial, tempo_inicial_seconds, quantidade_erros
+local questions, quantidade_questions, etapa, tempo_inicial, tempo_inicial_seconds
+local quantidade_erros, displayTime
 
+local quantidade_lifes  = 3
+local lifes_imagens     = {}
+
+local retangulo, pergunta, resposta, resposta_array, pergunta_fase
+local resposta_usuario_array = {}
+
+local config_gerar_letras_etapa
+
+-- Config params fase
+---------------------------------------------------------------------------------
 local function config_params_etapa( sceneGroup, event )
   questions             = event.params.questions
   quantidade_questions  = #questions
@@ -103,9 +114,6 @@ end
 
 --  Config lifes
 ---------------------------------------------------------------------------------
-local quantidade_lifes  = 3
-local lifes_imagens     = {}
-
 local function config_lifes( sceneGroup )
   for i=1,quantidade_lifes do
     if not lifes_imagens[i] then
@@ -167,17 +175,12 @@ end
 -- Body
 ---------------------------------------------------------------------------------
 
--- Variaveis
----------------------------------------------------------------------------------
-local retangulo, pergunta, resposta, resposta_array, pergunta_fase
-local resposta_usuario_array = {}
-
 -- Set respostas
 ---------------------------------------------------------------------------------
 local function set_resposta( event, letra )
-  resposta            = event.params.questions[etapa].resposta
-  resposta_array      = to_array( resposta )
-  result_resposta     = ''
+  resposta              = event.params.questions[etapa].resposta
+  resposta_array        = to_array( resposta )
+  local result_resposta = ''
   local indexs_letra  = allIndexOf(resposta_array, letra)
   for i=1,#indexs_letra do
     if (resposta_usuario_array[indexs_letra[i]] == nil) then
@@ -325,7 +328,7 @@ local function config_letras_body( sceneGroup, event )
       audio.play( popSound )
 
       local letra = letras_body[i]
-      path_letra  = "images/alfabeto/" .. letra .. ".png"
+      local path_letra  = "images/alfabeto/" .. letra .. ".png"
       all_objects_alfabeto[#all_objects_alfabeto + 1] = display.newImage( path_letra )
       local object_alfabeto = all_objects_alfabeto[#all_objects_alfabeto]
       object_alfabeto.x = math.random( regiao_letras.xi , regiao_letras.xf)
@@ -385,11 +388,12 @@ function scene:show( event )
     if ( phase == "will" ) then
         -- Called when the scene is still off screen (but is about to come on screen).
     elseif ( phase == "did" ) then
-      config_count_timer( sceneGroup )
-      config_gerar_letras_etapa()
         -- Called when the scene is now on screen.
         -- Insert code here to make the scene come alive.
         -- Example: start timers, begin animation, play audio, etc.
+      config_count_timer( sceneGroup )
+
+      config_gerar_letras_etapa()
     end
 end
 

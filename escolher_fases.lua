@@ -77,7 +77,7 @@ local function config_display_fases( sceneGroup )
           time    = 500,
           params  = {
             fase              = self.fase,
-            etapa             = 2,
+            etapa             = 1,
             tempo             = "00:00",
             questions         = data_questions[self.fase],
             quantidade_erros  = 0
