@@ -4,41 +4,36 @@
 --
 ---------------------------------------------------------------------------------
 
-local composer  = require "composer"
-local scene     = composer.newScene()
-
-local physics   = require("physics")
-local gameUI    = require("gameUI")
--- physics.setDrawMode( "hybrid" )
-
-physics.start()
-physics.setGravity( 0, 0 ) -- no gravity in any direction
-
-system.activate( "multitouch" )
-
-local glyphicons        = require("glyphicons")
-local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites2.png", glyphicons:getSheet())
-
 ---------------------------------------------------------------------------------
 -- Config Global
 ---------------------------------------------------------------------------------
 
--- Config background
+-- Require composer
 ---------------------------------------------------------------------------------
-local background
+local composer  = require "composer"
+local scene     = composer.newScene()
 
-local function config_background( sceneGroup )
-  background        = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue3"))
-  background.x      = display.contentCenterX
-  background.y      = display.contentCenterY
-
-  sceneGroup:insert( background )
-end
-
--- Config variables
+-- Require glyphicons
 ---------------------------------------------------------------------------------
-local questions, quantidade_questions, etapa, tempo_inicial, tempo_inicial_seconds
-local quantidade_erros, displayTime
+local glyphicons        = require("glyphicons")
+local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites2.png", glyphicons:getSheet())
+
+-- Require physics
+---------------------------------------------------------------------------------
+local physics   = require("physics")
+local gameUI    = require("gameUI")
+
+-- Init physics
+---------------------------------------------------------------------------------
+physics.start()
+physics.setGravity( 0, 0 )
+system.activate( "multitouch" )
+-- physics.setDrawMode( "hybrid" )
+
+-- Config variaveis
+---------------------------------------------------------------------------------
+local sceneGroupCreate, params
+local tempo_to_seconds, displayTime
 
 local quantidade_lifes  = 3
 local lifes_imagens     = {}
@@ -48,23 +43,36 @@ local resposta_usuario_array = {}
 
 local config_gerar_letras_etapa
 
+-- Config background
+---------------------------------------------------------------------------------
+local function config_background( )
+  local background        = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue3"))
+  background.x      = display.contentCenterX
+  background.y      = display.contentCenterY
+  sceneGroupCreate:insert( background )
+
+  return
+end
+
 -- Config params fase
 ---------------------------------------------------------------------------------
-local function config_params_etapa( sceneGroup, event )
-  questions             = event.params.questions
-  quantidade_questions  = #questions
-  etapa                 = event.params.etapa
-  tempo_inicial         = event.params.tempo
-  quantidade_erros      = event.params.quantidade_erros
-  local tempo = split(tempo_inicial, ':')
-  tempo_inicial_seconds = (tonumber( tempo[1] ) * 60) + (tonumber( tempo[2] ))
+local function config_params_etapa( event )
+  params = event.params
+  local tempo = split(params.tempo, ':')
+  tempo_to_seconds = (tonumber( tempo[1] ) * 60) + (tonumber( tempo[2] ))
+
+  return
 end
 
 -- Config global
 local function config_global( sceneGroup, event )
+  sceneGroupCreate = sceneGroup
+
   config_background( sceneGroup )
 
-  config_params_etapa( sceneGroup, event )
+  config_params_etapa( event )
+
+  return
 end
 
 
@@ -76,7 +84,7 @@ end
 ---------------------------------------------------------------------------------
 local function config_count_timer( sceneGroup )
   displayTime = display.newText({
-     text     = tempo_inicial,
+     text     = params.tempo,
      x        = centerX,
      y        = 20,
      width    = _W - 100,
@@ -85,7 +93,7 @@ local function config_count_timer( sceneGroup )
   })
   sceneGroup:insert( displayTime )
 
-  local levelTime = tempo_inicial_seconds
+  local levelTime = tempo_to_seconds
   local modf      = math.modf
   local function checkTime(event)
     levelTime           = levelTime + 1
@@ -106,64 +114,69 @@ local function config_count_timer( sceneGroup )
     displayTime.text = min .. ":" .. sec
   end
   timer.performWithDelay( 1000, checkTime, levelTime )
+
+  return
 end
 
 --  Config lifes
 ---------------------------------------------------------------------------------
 local function config_lifes( sceneGroup )
-  for i=1,quantidade_lifes do
+  for i=1, quantidade_lifes do
     if not lifes_imagens[i] then
-      lifes_imagens[i]      = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart"))
+      lifes_imagens[i] = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart"))
     end
 
-    if quantidade_erros >= i then
+    if params.quantidade_erros >= i then
       lifes_imagens[i]:removeSelf()
-      lifes_imagens[i]      = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart_empty"))
-      transition.to(lifes_imagens[i], { time = 800, xScale = 1.5, yScale = 1.5, transition = easing.outElastic  }) -- "pop" animation
+      lifes_imagens[i] = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart_empty"))
+      transition.to(lifes_imagens[i], { time = 800, xScale = 1.5, yScale = 1.5, transition = easing.outElastic  })
     end
 
     lifes_imagens[i].width, lifes_imagens[i].height = 15, 15
     lifes_imagens[i].x, lifes_imagens[i].y  = _W - 115 + (i*20), 20
-
     sceneGroup:insert( lifes_imagens[i] )
   end
+
+  return
 end
 
--- Remover life
+-- Config remover life
 ---------------------------------------------------------------------------------
-local function remover_life( sceneGroup )
-    if (quantidade_erros <= quantidade_lifes) then
-      quantidade_erros = quantidade_erros + 1
-      config_lifes( sceneGroup )
+local function config_remover_life( sceneGroup )
+  if params.quantidade_erros <= quantidade_lifes then
+    params.quantidade_erros = params.quantidade_erros + 1
+    config_lifes( sceneGroup )
 
-      if (quantidade_erros == quantidade_lifes) then
-        composer.gotoScene( "game_over", { effect = "zoomInOutFade", time = 500 } )
-      end
-
-      return true
+    if params.quantidade_erros == quantidade_lifes then
+      composer.gotoScene( "game_over", { effect = "zoomInOutFade" } )
     end
+  end
 
-    return false
+  return
 end
 
 -- Config name fase
 ---------------------------------------------------------------------------------
-local function config_nome_fase( sceneGroup, event )
+local function config_nome_fase( sceneGroup )
   local textField = display.newText({
-     text     = 'Fase:' .. event.params.fase,
+     text     = 'Fase:' .. params.fase,
      x        = centerX,
      y        = 20,
      fontSize = 20
   })
   sceneGroup:insert( textField )
+
+  return
 end
 
 -- Config header
 ---------------------------------------------------------------------------------
-local function config_header( sceneGroup, event )
-  config_nome_fase( sceneGroup, event )
+local function config_header( sceneGroup )
+  config_nome_fase( sceneGroup )
 
   config_lifes( sceneGroup )
+
+  return
 end
 
 
@@ -174,7 +187,7 @@ end
 -- Set respostas
 ---------------------------------------------------------------------------------
 local function set_resposta( event, letra )
-  resposta              = event.params.questions[etapa].resposta
+  resposta              = params.questions[params.etapa].resposta
   resposta_array        = to_array( resposta )
   local result_resposta = ''
   local indexs_letra  = allIndexOf(resposta_array, letra)
@@ -211,7 +224,7 @@ local function check_letra( sceneGroup, event, letra )
   end
 
   if #allIndexOf( resposta_array, letra) == 0 then
-    remover_life( sceneGroup )
+    config_remover_life( sceneGroup )
     retangulo:setFillColor(255, 0, 0)
   else
     retangulo:setFillColor(128, 255, 0)
@@ -229,7 +242,7 @@ end
 -- Set pergunta
 ---------------------------------------------------------------------------------
 local function set_pergunta( event )
-  pergunta_fase = event.params.questions[etapa].palavra
+  pergunta_fase = params.questions[params.etapa].palavra
 
   return pergunta_fase
 end
@@ -242,15 +255,11 @@ end
 -- Set questions
 ---------------------------------------------------------------------------------
 function proxima_fase( event )
+    params.etapa = 2
+    params.tempo = displayTime.text
     local options = {
         effect  = "flipFadeOutIn",
-        params  = {
-          fase              = 1,
-          etapa             = 2,
-          tempo             = displayTime.text,
-          questions         = questions,
-          quantidade_erros  = quantidade_erros
-        }
+        params  = params
     }
     composer.gotoScene( "etapa", options )
   return true
@@ -375,15 +384,13 @@ local function config_footer( sceneGroup )
 end
 
 function scene:create( event )
-  local sceneGroup = self.view
+  config_global( self.view, event )
 
-  config_global( sceneGroup, event )
+  config_header( self.view, event )
 
-  config_header( sceneGroup, event )
+  config_body( self.view , event )
 
-  config_body( sceneGroup , event )
-
-  config_footer( sceneGroup )
+  config_footer( self.view )
 end
 
 -- "scene:show()"
