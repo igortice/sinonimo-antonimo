@@ -62,9 +62,8 @@ end
 -- Config header
 ---------------------------------------------------------------------------------
 local function config_header( sceneGroup )
-  local texto_head        = display.newText( "Fases", 0, 0, native.systemFontBold, 20 )
+  local texto_head            = display.newText( "Fases", 0, 0, native.systemFontBold, 30 )
   texto_head.x, texto_head.y  = centerX, 50
-  texto_head:setFillColor( 255 )
   sceneGroup:insert( texto_head )
 
   return
@@ -92,7 +91,7 @@ local function config_display_fases( sceneGroup )
           quantidade_erros  = 0
         }
       }
-      composer.gotoScene( "fase", options )
+      composer.gotoScene( "etapa", options )
     end
 
     return
@@ -163,8 +162,8 @@ end
 -- "scene:show()"
 ---------------------------------------------------------------------------------
 function scene:show( event )
-  local sceneGroup = self.view
-  local phase = event.phase
+  local sceneGroup  = self.view
+  local phase       = event.phase
 
   if ( phase == "will" ) then
       -- Called when the scene is still off screen (but is about to come on screen).
@@ -173,7 +172,7 @@ function scene:show( event )
     -- Insert code here to make the scene come alive.
     -- Example: start timers, begin animation, play audio, etc.
     composer.removeScene( "tela_inicial" )
-    composer.removeScene( "fase" )
+    composer.removeScene( "game_over" )
 
     if (event.params) then
       local options = {

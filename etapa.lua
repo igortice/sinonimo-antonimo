@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------
 --
--- tela_inicial.lua
+-- etapa.lua
 --
 ---------------------------------------------------------------------------------
 
@@ -13,10 +13,14 @@
 local composer  = require "composer"
 local scene     = composer.newScene()
 
+-- Config variaveis
+---------------------------------------------------------------------------------
+local params
+
 -- Config background
 ---------------------------------------------------------------------------------
 local function config_background( sceneGroup )
-  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue1"))
+  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue3"))
   background.x      = centerX
   background.y      = centerY
 
@@ -25,10 +29,20 @@ local function config_background( sceneGroup )
   return
 end
 
+-- Config params etapa fase
+---------------------------------------------------------------------------------
+local function config_params_etapa_fase( event )
+  params = event.params
+
+  return
+end
+
 -- Config global
 ---------------------------------------------------------------------------------
-local function config_global( sceneGroup )
+local function config_global( sceneGroup, event )
   config_background( sceneGroup )
+
+  config_params_etapa_fase( event )
 
   return
 end
@@ -42,11 +56,11 @@ end
 ---------------------------------------------------------------------------------
 local function config_header( sceneGroup )
   local textField = display.newText({
-     text     = "Sinônimo \nx \nAntônimo",
+     text     = "Etapa",
      x        = centerX,
      y        = 120,
-     width    = 140,
-     fontSize = 30,
+     width    = _W,
+     fontSize = 50,
      align    = "center",
      font     = native.systemFontBold
   })
@@ -60,29 +74,18 @@ end
 -- Body
 ---------------------------------------------------------------------------------
 
--- Config play
+-- Config etapa
 ---------------------------------------------------------------------------------
-local function config_play( sceneGroup )
-  local function onIconTouch( self, event )
-    if event.phase == "began" then
-      audio.play( popSound )
-
-      composer.gotoScene( "escolher_fase", { effect = "zoomInOutFade" } )
-    end
-
-    return
-  end
-
+local function config_etapa( sceneGroup )
   local disk_yellow                       = display.newImage("images/puck_yellow.png")
-  disk_yellow.x, disk_yellow.y            = centerX, centerY + 50
-  disk_yellow.touch                       = onIconTouch
+  disk_yellow.x, disk_yellow.y            = centerX, centerY
   disk_yellow.alpha                       = 0.9
-  disk_yellow.width, disk_yellow.height   = 80, 80
   disk_yellow:addEventListener( "touch", disk_yellow )
-  sceneGroup:insert( disk_yellow )
 
-  local texto_iniciar = display.newText( "Jogar", 0, 0, native.systemFontBold, 22 )
+  local etapa = params.etapa
+  local texto_iniciar = display.newText( etapa, 0, 0, native.systemFontBold, 40 )
   texto_iniciar.x, texto_iniciar.y = centerX, disk_yellow.y
+  transition.to(texto_iniciar, { time = 800, delay = 800, xScale = 2.0, yScale = 2.0, transition = easing.inOutSine })
 
   local group = display.newGroup()
   group:insert( disk_yellow )
@@ -92,10 +95,21 @@ local function config_play( sceneGroup )
   return
 end
 
+local function init_etapa_fase( event )
+  local options = {
+    effect    = "flip",
+    delay     = 800,
+    params    = params
+  }
+  composer.gotoScene( "fase", options )
+
+  return
+end
+
 -- Config body
 ---------------------------------------------------------------------------------
 local function config_body( sceneGroup )
-  config_play( sceneGroup )
+  config_etapa( sceneGroup )
 
   return
 end
@@ -108,9 +122,6 @@ end
 -- Config footer
 ---------------------------------------------------------------------------------
 local function config_footer( sceneGroup )
-  local texto_autor             = display.newText( "por Igor Rocha", 0, 0, native.systemFontBold, 12 )
-  texto_autor.x, texto_autor.y  = centerX, _H - 20
-  sceneGroup:insert( texto_autor )
 
   return
 end
@@ -122,7 +133,7 @@ end
 function scene:create( event )
   local sceneGroup = self.view
 
-  config_global( sceneGroup )
+  config_global( sceneGroup, event )
 
   config_header( sceneGroup )
 
@@ -147,6 +158,10 @@ function scene:show( event )
     -- Called when the scene is now on screen.
     -- Insert code here to make the scene come alive.
     -- Example: start timers, begin animation, play audio, etc.
+    composer.removeScene( "escolher_fase" )
+    composer.removeScene( "fase" )
+
+    timer.performWithDelay( 1000, init_etapa_fase, event )
   end
 
   return

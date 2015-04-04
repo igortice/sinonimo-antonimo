@@ -59,7 +59,7 @@ local function config_body( sceneGroup )
     if event.phase == "began" then
       audio.play( popSound )
 
-      composer.gotoScene( "escolher_fases", { effect = "zoomInOutFade", time = 500 } )
+      composer.gotoScene( "escolher_fase", { effect = "zoomInOutFade", time = 500 } )
     elseif event.phase == "ended" or event.phase == "cancelled" then
       self.alpha = 0.25
     end

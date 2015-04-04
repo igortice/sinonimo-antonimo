@@ -252,7 +252,7 @@ function proxima_fase( event )
           quantidade_erros  = quantidade_erros
         }
     }
-    composer.gotoScene( "escolher_fases", options )
+    composer.gotoScene( "etapa", options )
   return true
 end
 
@@ -398,7 +398,7 @@ function scene:show( event )
         -- Insert code here to make the scene come alive.
         -- Example: start timers, begin animation, play audio, etc.
 
-      composer.removeScene( "escolher_fases" )
+      composer.removeScene( "etapa" )
 
       config_count_timer( sceneGroup )
 
