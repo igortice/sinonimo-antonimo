@@ -32,21 +32,30 @@ system.activate( "multitouch" )
 
 -- Config variaveis
 ---------------------------------------------------------------------------------
-local sceneGroupCreate, params
+local sceneGroupCreate, eventCreate, params
 local tempo_to_seconds, displayTime
 
 local quantidade_lifes  = 3
 local lifes_imagens     = {}
 
-local retangulo, pergunta, resposta, resposta_array, pergunta_fase
+local retangulo, pergunta, resposta, resposta_array
 local resposta_usuario_array = {}
 
 local config_gerar_letras_etapa
 
+-- Config scene group create
+---------------------------------------------------------------------------------
+local function config_scene_group_create( sceneGroup, event )
+  sceneGroupCreate  = sceneGroup
+  eventCreate       = event
+
+  return
+end
+
 -- Config background
 ---------------------------------------------------------------------------------
 local function config_background( )
-  local background        = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue3"))
+  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue3"))
   background.x      = display.contentCenterX
   background.y      = display.contentCenterY
   sceneGroupCreate:insert( background )
@@ -56,8 +65,8 @@ end
 
 -- Config params fase
 ---------------------------------------------------------------------------------
-local function config_params_etapa( event )
-  params = event.params
+local function config_params_etapa( )
+  params = eventCreate.params
   local tempo = split(params.tempo, ':')
   tempo_to_seconds = (tonumber( tempo[1] ) * 60) + (tonumber( tempo[2] ))
 
@@ -65,12 +74,13 @@ local function config_params_etapa( event )
 end
 
 -- Config global
+---------------------------------------------------------------------------------
 local function config_global( sceneGroup, event )
-  sceneGroupCreate = sceneGroup
+  config_scene_group_create( sceneGroup, event )
 
-  config_background( sceneGroup )
+  config_background( )
 
-  config_params_etapa( event )
+  config_params_etapa( )
 
   return
 end
@@ -82,7 +92,7 @@ end
 
 -- Config count timer
 ---------------------------------------------------------------------------------
-local function config_count_timer( sceneGroup )
+local function config_count_timer( )
   displayTime = display.newText({
      text     = params.tempo,
      x        = centerX,
@@ -91,7 +101,7 @@ local function config_count_timer( sceneGroup )
      fontSize = 20,
      align    = "left"
   })
-  sceneGroup:insert( displayTime )
+  sceneGroupCreate:insert( displayTime )
 
   local levelTime = tempo_to_seconds
   local modf      = math.modf
@@ -120,7 +130,7 @@ end
 
 --  Config lifes
 ---------------------------------------------------------------------------------
-local function config_lifes( sceneGroup )
+local function config_lifes( )
   for i=1, quantidade_lifes do
     if not lifes_imagens[i] then
       lifes_imagens[i] = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart"))
@@ -134,7 +144,7 @@ local function config_lifes( sceneGroup )
 
     lifes_imagens[i].width, lifes_imagens[i].height = 15, 15
     lifes_imagens[i].x, lifes_imagens[i].y  = _W - 115 + (i*20), 20
-    sceneGroup:insert( lifes_imagens[i] )
+    sceneGroupCreate:insert( lifes_imagens[i] )
   end
 
   return
@@ -142,10 +152,11 @@ end
 
 -- Config remover life
 ---------------------------------------------------------------------------------
-local function config_remover_life( sceneGroup )
+local function config_remover_life( )
   if params.quantidade_erros <= quantidade_lifes then
     params.quantidade_erros = params.quantidade_erros + 1
-    config_lifes( sceneGroup )
+
+    config_lifes( )
 
     if params.quantidade_erros == quantidade_lifes then
       composer.gotoScene( "game_over", { effect = "zoomInOutFade" } )
@@ -157,24 +168,24 @@ end
 
 -- Config name fase
 ---------------------------------------------------------------------------------
-local function config_nome_fase( sceneGroup )
+local function config_nome_fase( )
   local textField = display.newText({
      text     = 'Fase:' .. params.fase,
      x        = centerX,
      y        = 20,
      fontSize = 20
   })
-  sceneGroup:insert( textField )
+  sceneGroupCreate:insert( textField )
 
   return
 end
 
 -- Config header
 ---------------------------------------------------------------------------------
-local function config_header( sceneGroup )
-  config_nome_fase( sceneGroup )
+local function config_header( )
+  config_nome_fase( )
 
-  config_lifes( sceneGroup )
+  config_lifes( )
 
   return
 end
@@ -184,21 +195,41 @@ end
 -- Body
 ---------------------------------------------------------------------------------
 
+-- Get pergunta fase
+---------------------------------------------------------------------------------
+local function get_pergunta_fase( )
+  return params.questions[params.etapa].palavra:upper( )
+end
+
+-- Get proxima fase
+---------------------------------------------------------------------------------
+function get_proxima_fase( )
+  params.etapa = 2
+  params.tempo = displayTime.text
+  local options = {
+    effect  = "flipFadeOutIn",
+    params  = params
+  }
+  composer.gotoScene( "etapa", options )
+
+  return
+end
+
 -- Set respostas
 ---------------------------------------------------------------------------------
-local function set_resposta( event, letra )
+local function set_resposta( letra )
   resposta              = params.questions[params.etapa].resposta
   resposta_array        = to_array( resposta )
   local result_resposta = ''
   local indexs_letra  = allIndexOf(resposta_array, letra)
-  for i=1,#indexs_letra do
+  for i=1, #indexs_letra do
     if (resposta_usuario_array[indexs_letra[i]] == nil) then
       resposta_usuario_array[indexs_letra[i]] = letra
       break
     end
   end
 
-  for i=1,#resposta do
+  for i=1, #resposta do
     local palavra = '__'
     if resposta_usuario_array and resposta_usuario_array[i] ~= nil then
       palavra = resposta_usuario_array[i]
@@ -206,7 +237,44 @@ local function set_resposta( event, letra )
     result_resposta = result_resposta .. palavra .. ' '
   end
 
-  return result_resposta
+  return result_resposta:upper( )
+end
+
+-- Set questions
+---------------------------------------------------------------------------------
+local function set_question( )
+  pergunta.text = get_pergunta_fase( ) .. "\n" .. set_resposta( )
+
+  return
+end
+
+
+-- Config questions
+---------------------------------------------------------------------------------
+local function config_questions( )
+  pergunta = display.newText({
+     text     = '',
+     x        = centerX,
+     y        = 110,
+     width    = _W - 100,
+     fontSize = 20,
+     align    = "center"
+  })
+
+  set_question( )
+
+  retangulo = display.newRect( centerX, pergunta.y, _W , 120 )
+  retangulo.strokeWidth = 3
+  retangulo.alpha       = 0.5
+  retangulo:setFillColor( 0 )
+  retangulo:setStrokeColor( 1, 1, 1 )
+
+  local group = display.newGroup()
+  group:insert( retangulo )
+  group:insert( pergunta )
+  sceneGroupCreate:insert( group )
+
+  return
 end
 
 -- Check letra
@@ -232,61 +300,11 @@ local function check_letra( sceneGroup, event, letra )
 
   audio.play( popSound )
   transition.to(retangulo,{time=100,alpha=0.5, onComplete = function1})
-  pergunta.text = pergunta_fase:upper( ) .. "\n" .. set_resposta( event, letra ):upper( )
+  pergunta.text = get_pergunta_fase( ) .. "\n" .. set_resposta( letra )
   if (table.concat(resposta_usuario_array, "") == resposta) then
-    proxima_fase( event )
+    get_proxima_fase( )
   end
   return true
-end
-
--- Set pergunta
----------------------------------------------------------------------------------
-local function set_pergunta( event )
-  pergunta_fase = params.questions[params.etapa].palavra
-
-  return pergunta_fase
-end
-
--- Set questions
----------------------------------------------------------------------------------
-local function set_question( event )
-  pergunta.text = set_pergunta( event ):upper( ) .. "\n" .. set_resposta( event ):upper( )
-end
--- Set questions
----------------------------------------------------------------------------------
-function proxima_fase( event )
-    params.etapa = 2
-    params.tempo = displayTime.text
-    local options = {
-        effect  = "flipFadeOutIn",
-        params  = params
-    }
-    composer.gotoScene( "etapa", options )
-  return true
-end
-
--- Config questions
----------------------------------------------------------------------------------
-local function config_questions( sceneGroup, event )
-  pergunta = display.newText({
-     text     = '',
-     x        = centerX,
-     y        = 100,
-     width    = _W - 100,
-     fontSize = 20,
-     align    = "center"
-  })
-
-  set_question( event )
-
-  retangulo = display.newRect( centerX, pergunta.y, _W - 100, 100 )
-  retangulo.strokeWidth = 3
-  retangulo.alpha       = 0.5
-  retangulo:setFillColor( 0 )
-  retangulo:setStrokeColor( 1, 1, 1 )
-
-  sceneGroup:insert( retangulo )
-  sceneGroup:insert( pergunta )
 end
 
 --Config letras body
@@ -369,7 +387,7 @@ end
 
 -- Config body
 local function config_body( sceneGroup, event )
-  config_questions( sceneGroup, event )
+  config_questions( )
 
   config_letras_body( sceneGroup, event )
 end
@@ -386,7 +404,7 @@ end
 function scene:create( event )
   config_global( self.view, event )
 
-  config_header( self.view, event )
+  config_header( )
 
   config_body( self.view , event )
 
@@ -407,7 +425,7 @@ function scene:show( event )
 
       composer.removeScene( "etapa" )
 
-      config_count_timer( sceneGroup )
+      config_count_timer( )
 
       config_gerar_letras_etapa()
 
