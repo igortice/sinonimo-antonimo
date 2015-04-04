@@ -32,7 +32,7 @@ system.activate( "multitouch" )
 
 -- Config variaveis
 ---------------------------------------------------------------------------------
-local sceneGroupCreate, eventCreate, params
+local sceneGroupCreate, params
 local tempo_to_seconds, displayTime
 
 local quantidade_lifes  = 3
@@ -45,9 +45,8 @@ local config_gerar_letras_etapa
 
 -- Config scene group create
 ---------------------------------------------------------------------------------
-local function config_scene_group_create( sceneGroup, event )
+local function config_scene_group_create( sceneGroup)
   sceneGroupCreate  = sceneGroup
-  eventCreate       = event
 
   return
 end
@@ -65,10 +64,17 @@ end
 
 -- Config params fase
 ---------------------------------------------------------------------------------
-local function config_params_etapa( )
-  params = eventCreate.params
-  local tempo = split(params.tempo, ':')
-  tempo_to_seconds = (tonumber( tempo[1] ) * 60) + (tonumber( tempo[2] ))
+local function config_params_etapa( event )
+  params            = event.params
+
+  return
+end
+
+-- Config tempo to seconds
+---------------------------------------------------------------------------------
+local function config_tempo_to_seconds( )
+  local tempo       = split(params.tempo, ":")
+  tempo_to_seconds  = ( tonumber( tempo[1] ) * 60) + (tonumber( tempo[2] ) )
 
   return
 end
@@ -76,11 +82,13 @@ end
 -- Config global
 ---------------------------------------------------------------------------------
 local function config_global( sceneGroup, event )
-  config_scene_group_create( sceneGroup, event )
+  config_scene_group_create( sceneGroup )
 
   config_background( )
 
-  config_params_etapa( )
+  config_params_etapa( event )
+
+  config_tempo_to_seconds( )
 
   return
 end
@@ -138,12 +146,14 @@ local function config_lifes( )
 
     if params.quantidade_erros >= i then
       lifes_imagens[i]:removeSelf()
+
       lifes_imagens[i] = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart_empty"))
+
       transition.to(lifes_imagens[i], { time = 800, xScale = 1.5, yScale = 1.5, transition = easing.outElastic  })
     end
 
     lifes_imagens[i].width, lifes_imagens[i].height = 15, 15
-    lifes_imagens[i].x, lifes_imagens[i].y  = _W - 115 + (i*20), 20
+    lifes_imagens[i].x, lifes_imagens[i].y          = _W - 115 + (i*20), 20
     sceneGroupCreate:insert( lifes_imagens[i] )
   end
 
@@ -170,7 +180,7 @@ end
 ---------------------------------------------------------------------------------
 local function config_nome_fase( )
   local textField = display.newText({
-     text     = 'Fase:' .. params.fase,
+     text     = params.fase .. " - " .. params.etapa,
      x        = centerX,
      y        = 20,
      fontSize = 20
@@ -198,14 +208,15 @@ end
 -- Get pergunta fase
 ---------------------------------------------------------------------------------
 local function get_pergunta_fase( )
+
   return params.questions[params.etapa].palavra:upper( )
 end
 
 -- Get proxima fase
 ---------------------------------------------------------------------------------
-function get_proxima_fase( )
-  params.etapa = 2
-  params.tempo = displayTime.text
+function get_proxima_etapa( )
+  params.etapa  = params.etapa + 1
+  params.tempo  = displayTime.text
   local options = {
     effect  = "flipFadeOutIn",
     params  = params
@@ -220,11 +231,14 @@ end
 local function set_resposta( letra )
   resposta              = params.questions[params.etapa].resposta
   resposta_array        = to_array( resposta )
-  local result_resposta = ''
-  local indexs_letra  = allIndexOf(resposta_array, letra)
+
+  local result_resposta = ""
+
+  local indexs_letra    = allIndexOf(resposta_array, letra)
   for i=1, #indexs_letra do
-    if (resposta_usuario_array[indexs_letra[i]] == nil) then
+    if resposta_usuario_array[indexs_letra[i]] == nil then
       resposta_usuario_array[indexs_letra[i]] = letra
+
       break
     end
   end
@@ -279,65 +293,80 @@ end
 
 -- Check letra
 ---------------------------------------------------------------------------------
-local function check_letra( sceneGroup, event, letra )
+local function check_letra( letra )
   local function1, function2
 
-  function function1(e)
-    transition.to(retangulo,{time=100, onComplete=function2})
+  function function1( )
+    transition.to( retangulo, { time=100, onComplete=function2 } )
+
+    return
   end
 
-  function function2(e)
+  function function2( )
     retangulo:setFillColor( 0 )
-    transition.to(retangulo, { time=100,alpha=0.5 })
+
+    transition.to( retangulo, { time=100, alpha=0.5 } )
+
+    return
   end
 
   if #allIndexOf( resposta_array, letra) == 0 then
-    config_remover_life( sceneGroup )
+    config_remover_life( )
+
+    audio.play( buzzSound )
+
     retangulo:setFillColor(255, 0, 0)
   else
     retangulo:setFillColor(128, 255, 0)
+
+    audio.play( popSound )
   end
 
-  audio.play( popSound )
-  transition.to(retangulo,{time=100,alpha=0.5, onComplete = function1})
+  transition.to( retangulo, { time=100, alpha=0.5, onComplete = function1 } )
+
   pergunta.text = get_pergunta_fase( ) .. "\n" .. set_resposta( letra )
-  if (table.concat(resposta_usuario_array, "") == resposta) then
-    get_proxima_fase( )
+
+  if table.concat(resposta_usuario_array, "") == resposta then
+    get_proxima_etapa( )
   end
-  return true
+
+  return
 end
 
 --Config letras body
 ---------------------------------------------------------------------------------
-local function config_letras_body( sceneGroup, event )
-  local alfabeto              = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"}
+local function config_letras_body( )
+  local alfabeto              = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" }
   local all_objects_alfabeto  = {}
-  local regiao_letras         = {xi="70", xf="260", yi="200", yf="450"}
+  local regiao_letras         = { xi="70", xf="260", yi="200", yf="450" }
 
   -- Config drag letra
   ---------------------------------------------------------------------------------
   local function config_drag_letra()
     for i = 1, #all_objects_alfabeto do
       local object_alfabeto = all_objects_alfabeto[i]
-      if (object_alfabeto and object_alfabeto.x) then
+      if object_alfabeto and object_alfabeto.x then
         if object_alfabeto.y < 154 then
-          print( object_alfabeto.letra )
-          check_letra( sceneGroup, event, object_alfabeto.letra )
-          object_alfabeto:removeSelf()
-          table.remove( all_objects_alfabeto, i )
+          check_letra( object_alfabeto.letra )
 
+          object_alfabeto:removeSelf()
+
+          table.remove( all_objects_alfabeto, i )
         end
+
         if object_alfabeto.x < 10 or object_alfabeto.x > _W - 10 or object_alfabeto.y < -1 or object_alfabeto.y > _H - 10 then
-          print( 'saiu' )
           audio.play( popSound )
+
           -- object_alfabeto:removeSelf()
           object_alfabeto.isAwake = false
-          object_alfabeto.x = math.random( regiao_letras.xi , regiao_letras.xf)
-          object_alfabeto.y = math.random( regiao_letras.yi , regiao_letras.yf)
+          object_alfabeto.x       = math.random( regiao_letras.xi , regiao_letras.xf)
+          object_alfabeto.y       = math.random( regiao_letras.yi , regiao_letras.yf)
           -- table.remove( all_objects_alfabeto, i )
         end
       end
     end
+
+    return
   end
 
   -- Config drag body
@@ -357,39 +386,45 @@ local function config_letras_body( sceneGroup, event )
 
     letras_body = shuffleTable( letras_body )
 
-    for i=1,#letras_body do
+    for i=1, #letras_body do
       audio.play( popSound )
 
-      local letra = letras_body[i]
-      local path_letra  = "images/alfabeto/" .. letra .. ".png"
-      all_objects_alfabeto[#all_objects_alfabeto + 1] = display.newImage( path_letra )
-      local object_alfabeto = all_objects_alfabeto[#all_objects_alfabeto]
-      object_alfabeto.x = math.random( regiao_letras.xi , regiao_letras.xf)
-      object_alfabeto.y = math.random( regiao_letras.yi , regiao_letras.yf)
-      object_alfabeto.width, object_alfabeto.height = 20, 20
-      object_alfabeto.rotation = math.random( 1, 360 )
-      object_alfabeto.xScale, object_alfabeto.yScale = 0.8, 0.8
-      object_alfabeto.letra = letra
+      local letra                                       = letras_body[i]
+      local path_letra                                  = "images/alfabeto/" .. letra .. ".png"
+      all_objects_alfabeto[#all_objects_alfabeto + 1]   = display.newImage( path_letra )
 
+      local object_alfabeto                           = all_objects_alfabeto[#all_objects_alfabeto]
+      object_alfabeto.x                               = math.random( regiao_letras.xi , regiao_letras.xf)
+      object_alfabeto.y                               = math.random( regiao_letras.yi , regiao_letras.yf)
+      object_alfabeto.width, object_alfabeto.height   = 20, 20
+      object_alfabeto.rotation                        = math.random( 1, 360 )
+      object_alfabeto.xScale, object_alfabeto.yScale  = 0.8, 0.8
+      object_alfabeto.letra                           = letra
       transition.to(object_alfabeto, { time = 800, xScale = 2.0, yScale = 2.0, transition = easing.outElastic })
 
       physics.addBody( object_alfabeto, { density=0.6, friction=1 } )
       object_alfabeto.linearDamping  = 0.4
       object_alfabeto.angularDamping = 1.6
-
       object_alfabeto:addEventListener( "touch", config_drag_body )
-      sceneGroup:insert( object_alfabeto )
+      sceneGroupCreate:insert( object_alfabeto )
     end
+
+    return
   end
 
-  Runtime:addEventListener( "enterFrame", config_drag_letra ) -- clean up offscreen disks
+  Runtime:addEventListener( "enterFrame", config_drag_letra )
+
+  return
 end
 
 -- Config body
+---------------------------------------------------------------------------------
 local function config_body( sceneGroup, event )
   config_questions( )
 
-  config_letras_body( sceneGroup, event )
+  config_letras_body( )
+
+  return
 end
 
 
@@ -398,73 +433,91 @@ end
 ---------------------------------------------------------------------------------
 
 -- Config footer
-local function config_footer( sceneGroup )
+---------------------------------------------------------------------------------
+local function config_footer( )
+
+  return
 end
 
+
+---------------------------------------------------------------------------------
+-- "scene:create()"
+---------------------------------------------------------------------------------
 function scene:create( event )
   config_global( self.view, event )
 
   config_header( )
 
-  config_body( self.view , event )
+  config_body( )
 
-  config_footer( self.view )
+  config_footer( )
 end
 
--- "scene:show()"
-function scene:show( event )
-    local sceneGroup = self.view
-    local phase = event.phase
-
-    if ( phase == "will" ) then
-        -- Called when the scene is still off screen (but is about to come on screen).
-    elseif ( phase == "did" ) then
-        -- Called when the scene is now on screen.
-        -- Insert code here to make the scene come alive.
-        -- Example: start timers, begin animation, play audio, etc.
-
-      composer.removeScene( "etapa" )
-
-      config_count_timer( )
-
-      config_gerar_letras_etapa()
-
-
-    end
-end
-
--- "scene:hide()"
-function scene:hide( event )
-    local sceneGroup  = self.view
-    local phase       = event.phase
-
-    if ( phase == "will" ) then
-        -- Called when the scene is on screen (but is about to go off screen).
-        -- Insert code here to "pause" the scene.
-        -- Example: stop timers, stop animation, stop audio, etc.
-    elseif ( phase == "did" ) then
-        -- Called immediately after scene goes off screen.
-    end
-end
-
--- "scene:destroy()"
-function scene:destroy( event )
-
-    local sceneGroup = self.view
-
-    -- Called prior to the removal of scene's view ("sceneGroup").
-    -- Insert code here to clean up the scene.
-    -- Example: remove display objects, save state, etc.
-end
 
 ---------------------------------------------------------------------------------
+-- "scene:show()"
+---------------------------------------------------------------------------------
+function scene:show( event )
+  local sceneGroup  = self.view
+  local phase       = event.phase
 
+  if ( phase == "will" ) then
+    -- Called when the scene is still off screen (but is about to come on screen).
+  elseif ( phase == "did" ) then
+    -- Called when the scene is now on screen.
+    -- Insert code here to make the scene come alive.
+    -- Example: start timers, begin animation, play audio, etc.
+
+    composer.removeScene( "etapa" )
+
+    config_count_timer( )
+
+    config_gerar_letras_etapa()
+  end
+
+  return
+end
+
+
+---------------------------------------------------------------------------------
+-- "scene:hide()"
+---------------------------------------------------------------------------------
+function scene:hide( event )
+  local sceneGroup  = self.view
+  local phase       = event.phase
+
+  if ( phase == "will" ) then
+    -- Called when the scene is on screen (but is about to go off screen).
+    -- Insert code here to "pause" the scene.
+    -- Example: stop timers, stop animation, stop audio, etc.
+  elseif ( phase == "did" ) then
+    -- Called immediately after scene goes off screen.
+  end
+
+  return
+end
+
+
+---------------------------------------------------------------------------------
+-- "scene:destroy()"
+---------------------------------------------------------------------------------
+function scene:destroy( event )
+  local sceneGroup = self.view
+
+  -- Called prior to the removal of scene's view ("sceneGroup").
+  -- Insert code here to clean up the scene.
+  -- Example: remove display objects, save state, etc.
+
+  return
+end
+
+
+---------------------------------------------------------------------------------
 -- Listener setup
+---------------------------------------------------------------------------------
 scene:addEventListener( "create", scene )
 scene:addEventListener( "show", scene )
 scene:addEventListener( "hide", scene )
 scene:addEventListener( "destroy", scene )
-
----------------------------------------------------------------------------------
 
 return scene

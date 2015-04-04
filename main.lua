@@ -33,7 +33,8 @@ local function main( )
   _W        = display.contentWidth
   _H        = display.contentHeight
 
-  popSound  = audio.loadSound ("sounds/pop2_wav.wav")
+  popSound    = audio.loadSound ("sounds/pop2_wav.wav")
+  buzzSound   = audio.loadSound ("sounds/buzz.mp3")
 
 
   -- Load tela inicial
