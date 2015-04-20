@@ -13,14 +13,26 @@
 local composer  = require "composer"
 local scene     = composer.newScene()
 
+-- Config variaveis
+---------------------------------------------------------------------------------
+local sceneGroupCreate
+
+-- Config scene group create
+---------------------------------------------------------------------------------
+local function config_scene_group_create( sceneGroup)
+  sceneGroupCreate  = sceneGroup
+
+  return
+end
+
 -- Config background
 ---------------------------------------------------------------------------------
-local function config_background( sceneGroup )
+local function config_background( )
   local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue1"))
   background.x      = centerX
   background.y      = centerY
 
-  sceneGroup:insert( background )
+  sceneGroupCreate:insert( background )
 
   return
 end
@@ -28,7 +40,9 @@ end
 -- Config global
 ---------------------------------------------------------------------------------
 local function config_global( sceneGroup )
-  config_background( sceneGroup )
+  config_scene_group_create( sceneGroup )
+
+  config_background( )
 
   return
 end
@@ -40,7 +54,7 @@ end
 
 -- Config header
 ---------------------------------------------------------------------------------
-local function config_header( sceneGroup )
+local function config_header( )
   local textField = display.newText({
      text     = "Sinônimo \nx \nAntônimo",
      x        = centerX,
@@ -50,7 +64,7 @@ local function config_header( sceneGroup )
      align    = "center",
      font     = native.systemFontBold
   })
-  sceneGroup:insert( textField )
+  sceneGroupCreate:insert( textField )
 
   return
 end
@@ -62,7 +76,7 @@ end
 
 -- Config play
 ---------------------------------------------------------------------------------
-local function config_play( sceneGroup )
+local function config_play( )
   local function onIconTouch( self, event )
     if event.phase == "began" then
       audio.play( popSound )
@@ -79,7 +93,7 @@ local function config_play( sceneGroup )
   disk_yellow.alpha                       = 0.9
   disk_yellow.width, disk_yellow.height   = 80, 80
   disk_yellow:addEventListener( "touch", disk_yellow )
-  sceneGroup:insert( disk_yellow )
+  sceneGroupCreate:insert( disk_yellow )
 
   local texto_iniciar = display.newText( "Jogar", 0, 0, native.systemFontBold, 22 )
   texto_iniciar.x, texto_iniciar.y = centerX, disk_yellow.y
@@ -87,15 +101,15 @@ local function config_play( sceneGroup )
   local group = display.newGroup()
   group:insert( disk_yellow )
   group:insert( texto_iniciar )
-  sceneGroup:insert( group )
+  sceneGroupCreate:insert( group )
 
   return
 end
 
 -- Config body
 ---------------------------------------------------------------------------------
-local function config_body( sceneGroup )
-  config_play( sceneGroup )
+local function config_body( )
+  config_play( )
 
   return
 end
@@ -107,10 +121,10 @@ end
 
 -- Config footer
 ---------------------------------------------------------------------------------
-local function config_footer( sceneGroup )
+local function config_footer( )
   local texto_autor             = display.newText( "por Igor Rocha", 0, 0, native.systemFontBold, 12 )
   texto_autor.x, texto_autor.y  = centerX, _H - 20
-  sceneGroup:insert( texto_autor )
+  sceneGroupCreate:insert( texto_autor )
 
   return
 end
@@ -120,15 +134,13 @@ end
 -- "scene:create()"
 ---------------------------------------------------------------------------------
 function scene:create( event )
-  local sceneGroup = self.view
+  config_global( self.view )
 
-  config_global( sceneGroup )
+  config_header( )
 
-  config_header( sceneGroup )
+  config_body( )
 
-  config_body( sceneGroup )
-
-  config_footer( sceneGroup )
+  config_footer( )
 
   return
 end

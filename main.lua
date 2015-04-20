@@ -40,7 +40,7 @@ local function main( )
   -- Load tela inicial
   ---------------------------------------------------------------------------------
   local composer = require "composer"
-  composer.gotoScene( "escolher_fase", { effect = "zoomInOutFade", time = 500 } )
+  composer.gotoScene( "tela_inicial", { effect = "zoomInOutFade", time = 500 } )
 end
 
 
