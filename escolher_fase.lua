@@ -20,8 +20,28 @@ local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites2
 
 -- Config variaveis
 ---------------------------------------------------------------------------------
+local sceneGroupCreate
 local data_questions
 local fases_liberadas = 1
+
+-- Config scene group create
+---------------------------------------------------------------------------------
+local function config_scene_group_create( sceneGroup)
+  sceneGroupCreate  = sceneGroup
+
+  return
+end
+
+-- Config background
+---------------------------------------------------------------------------------
+local function config_background( )
+  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue2"))
+  background.x      = centerX
+  background.y      = centerY
+  sceneGroupCreate:insert( background )
+
+  return
+end
 
 -- Config data questions
 ---------------------------------------------------------------------------------
@@ -33,23 +53,14 @@ local function config_data_questions( )
   return
 end
 
--- Config background
----------------------------------------------------------------------------------
-local function config_background( sceneGroup )
-  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue2"))
-  background.x      = centerX
-  background.y      = centerY
-  sceneGroup:insert( background )
-
-  return
-end
-
 -- Config global
 ---------------------------------------------------------------------------------
 local function config_global( sceneGroup )
-  config_background( sceneGroup )
+  config_scene_group_create( sceneGroup )
 
-  config_data_questions()
+  config_background( )
+
+  config_data_questions( )
 
   return
 end
@@ -61,10 +72,10 @@ end
 
 -- Config header
 ---------------------------------------------------------------------------------
-local function config_header( sceneGroup )
+local function config_header( )
   local texto_head            = display.newText( "Fases", 0, 0, native.systemFontBold, 30 )
   texto_head.x, texto_head.y  = centerX, 50
-  sceneGroup:insert( texto_head )
+  sceneGroupCreate:insert( texto_head )
 
   return
 end
@@ -76,7 +87,7 @@ end
 
 -- Config diplay fases body
 ---------------------------------------------------------------------------------
-local function config_display_fases( sceneGroup )
+local function config_display_fases( )
   local function onFaseTouch( self, event )
     if event.phase == "began" then
       audio.play( popSound )
@@ -115,17 +126,17 @@ local function config_display_fases( sceneGroup )
     disk_yellow.touch                       = onFaseTouch
     disk_yellow.fase                        = numero_fase
     disk_yellow.xScale, disk_yellow.yScale  = 0.5, 0.5
-    sceneGroup:insert( disk_yellow )
+    sceneGroupCreate:insert( disk_yellow )
 
     if fases_liberadas < numero_fase then
       local icon              = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("lock"))
       icon.x, icon.y          = disk_yellow.x, disk_yellow.y
       icon.width, icon.height = 18, 20
-      sceneGroup:insert( icon )
+      sceneGroupCreate:insert( icon )
     else
       local texto_numero_fase                   = display.newText( numero_fase, 0, 0, native.systemFontBold, 24 )
       texto_numero_fase.x, texto_numero_fase.y  = disk_yellow.x, disk_yellow.y
-      sceneGroup:insert( texto_numero_fase )
+      sceneGroupCreate:insert( texto_numero_fase )
       disk_yellow:addEventListener( "touch", disk_yellow )
     end
   end
@@ -135,8 +146,8 @@ end
 
 -- Config body
 ---------------------------------------------------------------------------------
-local function config_body( sceneGroup )
-  config_display_fases( sceneGroup )
+local function config_body( )
+  config_display_fases( )
 
   return
 end
@@ -146,13 +157,11 @@ end
 -- "scene:create()"
 ---------------------------------------------------------------------------------
 function scene:create( event )
-  local sceneGroup = self.view
+  config_global( self.view )
 
-  config_global( sceneGroup )
+  config_header( )
 
-  config_header( sceneGroup )
-
-  config_body( sceneGroup )
+  config_body( )
 
   return
 end
