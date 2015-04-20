@@ -15,7 +15,23 @@ local scene     = composer.newScene()
 
 -- Config variaveis
 ---------------------------------------------------------------------------------
-local params
+local sceneGroupCreate, params
+
+-- Config scene group create
+---------------------------------------------------------------------------------
+local function config_scene_group_create( sceneGroup )
+  sceneGroupCreate  = sceneGroup
+
+  return
+end
+
+-- Config params etapa fase
+---------------------------------------------------------------------------------
+local function config_params_etapa( event )
+  params = event.params
+
+  return
+end
 
 -- Config background
 ---------------------------------------------------------------------------------
@@ -24,15 +40,7 @@ local function config_background( sceneGroup )
   background.x      = centerX
   background.y      = centerY
 
-  sceneGroup:insert( background )
-
-  return
-end
-
--- Config params etapa fase
----------------------------------------------------------------------------------
-local function config_params_etapa_fase( event )
-  params = event.params
+  sceneGroupCreate:insert( background )
 
   return
 end
@@ -40,9 +48,11 @@ end
 -- Config global
 ---------------------------------------------------------------------------------
 local function config_global( sceneGroup, event )
-  config_background( sceneGroup )
+  config_scene_group_create( sceneGroup )
 
-  config_params_etapa_fase( event )
+  config_params_etapa( event )
+
+  config_background( )
 
   return
 end
@@ -54,7 +64,7 @@ end
 
 -- Config header
 ---------------------------------------------------------------------------------
-local function config_header( sceneGroup )
+local function config_header( )
   local textField = display.newText({
      text     = "Etapa",
      x        = centerX,
@@ -64,7 +74,7 @@ local function config_header( sceneGroup )
      align    = "center",
      font     = native.systemFontBold
   })
-  sceneGroup:insert( textField )
+  sceneGroupCreate:insert( textField )
 
   return
 end
@@ -76,7 +86,7 @@ end
 
 -- Config etapa
 ---------------------------------------------------------------------------------
-local function config_etapa( sceneGroup )
+local function config_etapa( )
   local disk_yellow                       = display.newImage("images/puck_yellow.png")
   disk_yellow.x, disk_yellow.y            = centerX, centerY
   disk_yellow.alpha                       = 0.9
@@ -90,12 +100,12 @@ local function config_etapa( sceneGroup )
   local group = display.newGroup()
   group:insert( disk_yellow )
   group:insert( texto_iniciar )
-  sceneGroup:insert( group )
+  sceneGroupCreate:insert( group )
 
   return
 end
 
-local function init_etapa_fase( event )
+local function init_etapa_fase( )
   local options = {
     effect    = "flip",
     delay     = 800,
@@ -108,8 +118,8 @@ end
 
 -- Config body
 ---------------------------------------------------------------------------------
-local function config_body( sceneGroup )
-  config_etapa( sceneGroup )
+local function config_body( )
+  config_etapa( )
 
   return
 end
@@ -121,7 +131,7 @@ end
 
 -- Config footer
 ---------------------------------------------------------------------------------
-local function config_footer( sceneGroup )
+local function config_footer( )
 
   return
 end
@@ -131,15 +141,13 @@ end
 -- "scene:create()"
 ---------------------------------------------------------------------------------
 function scene:create( event )
-  local sceneGroup = self.view
+  config_global( self.view, event )
 
-  config_global( sceneGroup, event )
+  config_header( )
 
-  config_header( sceneGroup )
+  config_body( )
 
-  config_body( sceneGroup )
-
-  config_footer( sceneGroup )
+  config_footer( )
 
   return
 end
@@ -159,9 +167,10 @@ function scene:show( event )
     -- Insert code here to make the scene come alive.
     -- Example: start timers, begin animation, play audio, etc.
     composer.removeScene( "escolher_fase" )
+
     composer.removeScene( "fase" )
 
-    timer.performWithDelay( 1000, init_etapa_fase, event )
+    timer.performWithDelay( 1000, init_etapa_fase )
   end
 
   return

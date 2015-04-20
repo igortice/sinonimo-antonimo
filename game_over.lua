@@ -4,30 +4,47 @@
 --
 ---------------------------------------------------------------------------------
 
-local composer  = require "composer"
-local scene     = composer.newScene()
-
-local background_sheet        = require("bg_sheets")
-local background_sheet_sprite = graphics.newImageSheet( "images/bg_spritesheet.png", background_sheet:getSheet() )
-
 ---------------------------------------------------------------------------------
 -- Config Global
 ---------------------------------------------------------------------------------
 
+-- Require composer
+---------------------------------------------------------------------------------
+local composer  = require "composer"
+local scene     = composer.newScene()
+
+-- Config variaveis
+---------------------------------------------------------------------------------
+local sceneGroupCreate
+
+-- Config scene group create
+---------------------------------------------------------------------------------
+local function config_scene_group_create( sceneGroup)
+  sceneGroupCreate  = sceneGroup
+
+  return
+end
+
 -- Config background
 ---------------------------------------------------------------------------------
-local function config_background( sceneGroup )
+local function config_background( )
   local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue1"))
   background.x      = centerX
   background.y      = centerY
 
-  sceneGroup:insert( background )
+  sceneGroupCreate:insert( background )
+
+  return
 end
 
 -- Config global
 ---------------------------------------------------------------------------------
 local function config_global( sceneGroup )
-  config_background( sceneGroup )
+  config_scene_group_create( sceneGroup )
+
+  config_background( )
+
+  return
 end
 
 
@@ -37,7 +54,7 @@ end
 
 -- Config header
 ---------------------------------------------------------------------------------
-local function config_header( sceneGroup )
+local function config_header( )
 end
 
 
@@ -47,13 +64,13 @@ end
 
 -- Config body
 ---------------------------------------------------------------------------------
-local function config_body( sceneGroup )
+local function config_body( )
   local texto_game_over = display.newText( "Game Over", 0, 0, native.systemFontBold, 24 )
   texto_game_over:setFillColor( 255 )
   texto_game_over.xScale, texto_game_over.yScale = 0, 0
   texto_game_over.x, texto_game_over.y = centerX, centerY - 100
   transition.to(texto_game_over, { time = 1800, delay = 800,xScale = 2.0, yScale = 2.0, transition = easing.outElastic })
-  sceneGroup:insert( texto_game_over )
+  sceneGroupCreate:insert( texto_game_over )
 
   local function onIconTouch( self, event )
     if event.phase == "began" then
@@ -71,12 +88,12 @@ local function config_body( sceneGroup )
   disk_red.x, disk_red.y  = centerX, centerY
   disk_red.touch      = onIconTouch
   disk_red:addEventListener( "touch", disk_red )
-  sceneGroup:insert( disk_red )
+  sceneGroupCreate:insert( disk_red )
 
   local texto_iniciar = display.newText( "Jogar", 0, 0, native.systemFontBold, 24 )
   texto_iniciar:setFillColor( 255 )
   texto_iniciar.x, texto_iniciar.y = disk_red.x, disk_red.y
-  sceneGroup:insert( texto_iniciar )
+  sceneGroupCreate:insert( texto_iniciar )
 end
 
 
@@ -86,20 +103,18 @@ end
 
 -- Config footer
 ---------------------------------------------------------------------------------
-local function config_footer( sceneGroup )
+local function config_footer( )
 end
 
 -- "scene:create()"
 function scene:create( event )
-  local sceneGroup = self.view
+  config_global( self.view )
 
-  config_global( sceneGroup )
+  config_header( )
 
-  config_header( sceneGroup )
+  config_body( )
 
-  config_body( sceneGroup )
-
-  config_footer( sceneGroup )
+  config_footer( )
 end
 
 -- "scene:show()"
@@ -114,6 +129,8 @@ function scene:show( event )
         -- Called when the scene is now on screen.
         -- Insert code here to make the scene come alive.
         -- Example: start timers, begin animation, play audio, etc.
+
+        composer.removeScene( "fase" )
     end
 end
 

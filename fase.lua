@@ -45,8 +45,16 @@ local config_gerar_letras_etapa
 
 -- Config scene group create
 ---------------------------------------------------------------------------------
-local function config_scene_group_create( sceneGroup)
+local function config_scene_group_create( sceneGroup )
   sceneGroupCreate  = sceneGroup
+
+  return
+end
+
+-- Config params fase
+---------------------------------------------------------------------------------
+local function config_params_etapa( event )
+  params            = event.params
 
   return
 end
@@ -58,14 +66,6 @@ local function config_background( )
   background.x      = display.contentCenterX
   background.y      = display.contentCenterY
   sceneGroupCreate:insert( background )
-
-  return
-end
-
--- Config params fase
----------------------------------------------------------------------------------
-local function config_params_etapa( event )
-  params            = event.params
 
   return
 end
@@ -84,9 +84,9 @@ end
 local function config_global( sceneGroup, event )
   config_scene_group_create( sceneGroup )
 
-  config_background( )
-
   config_params_etapa( event )
+
+  config_background( )
 
   config_tempo_to_seconds( )
 
