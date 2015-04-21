@@ -187,14 +187,6 @@ function scene:show( event )
     composer.removeScene( "game_over" )
 
     composer.removeScene( "fase" )
-
-    if (event.params) then
-      local options = {
-        effect  = "flipFadeOutIn",
-        params  = event.params
-      }
-      composer.gotoScene( "fase", options )
-    end
   end
 
   return

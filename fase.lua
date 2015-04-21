@@ -229,11 +229,12 @@ end
 ---------------------------------------------------------------------------------
 function get_proxima_fase( )
   data.settings.fases_liberadas   = data.settings.fases_liberadas + 1
+  local loadsave = require( "loadsave" )
   loadsave.saveTable( data.settings, "settings.json" )
   local options = {
     effect  = "flipFadeOutIn"
   }
-  composer.gotoScene( "etapa", options )
+  composer.gotoScene( "escolher_fase", options )
 
   return
 end

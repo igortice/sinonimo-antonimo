@@ -37,8 +37,8 @@ local function main( )
   buzzSound   = audio.loadSound ("sounds/buzz.mp3")
 
 
-  loadsave = require( "loadsave" )
-  loadsave.changeDefault(system.ResourceDirectory)
+  local loadsave = require( "loadsave" )
+  -- loadsave.changeDefault(system.ResourceDirectory)
   data          = {}
   data.settings = loadsave.loadTable( "settings.json" )
 
@@ -49,7 +49,7 @@ local function main( )
       data.settings.difficulty        = "easy"
       data.settings.highScore         = 0
       data.settings.fases_liberadas   = 1
-      data.settings.questions         = '[[{"palavra":"casa","resposta":"lar"},{"palavra":"entrar","resposta":"sair"},{"palavra":"trabalho","resposta":"emprego"}],[{"palavra":"hate","resposta":"odio"}]]'
+      data.settings.questions         = '[[{"palavra":"casa","resposta":"lar"}],[{"palavra":"hate","resposta":"odio"}]]'
       loadsave.saveTable( data.settings, "settings.json" )
   end
 
