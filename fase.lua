@@ -180,7 +180,7 @@ end
 ---------------------------------------------------------------------------------
 local function config_nome_fase( )
   local textField = display.newText({
-     text     = params.fase .. " - " .. params.etapa,
+     text     = params.etapa .. " - " .. #params.questions,
      x        = centerX,
      y        = 20,
      fontSize = 20
@@ -212,14 +212,26 @@ local function get_pergunta_fase( )
   return params.questions[params.etapa].palavra:upper( )
 end
 
--- Get proxima fase
+-- Get proxima etapa
 ---------------------------------------------------------------------------------
 function get_proxima_etapa( )
-  params.etapa  = params.etapa + 1
   params.tempo  = displayTime.text
   local options = {
     effect  = "flipFadeOutIn",
     params  = params
+  }
+  composer.gotoScene( "etapa", options )
+
+  return
+end
+
+-- Get proxima fase
+---------------------------------------------------------------------------------
+function get_proxima_fase( )
+  data.settings.fases_liberadas   = data.settings.fases_liberadas + 1
+  loadsave.saveTable( data.settings, "settings.json" )
+  local options = {
+    effect  = "flipFadeOutIn"
   }
   composer.gotoScene( "etapa", options )
 
@@ -310,6 +322,8 @@ local function check_letra( letra )
     return
   end
 
+
+
   if #allIndexOf( resposta_array, letra) == 0 then
     config_remover_life( )
 
@@ -325,8 +339,20 @@ local function check_letra( letra )
   transition.to( retangulo, { time=100, alpha=0.5, onComplete = function1 } )
 
   pergunta.text = get_pergunta_fase( ) .. "\n" .. set_resposta( letra )
+  local res_usu = ""
+  for k,v in pairs(resposta_usuario_array) do
+    res_usu = res_usu .. v
+  end
 
-  if table.concat(resposta_usuario_array, "") == resposta then
+  if res_usu == resposta then
+    params.etapa  = params.etapa + 1
+
+    if params.etapa > #params.questions then
+      get_proxima_fase( )
+
+      return
+    end
+
     get_proxima_etapa( )
   end
 

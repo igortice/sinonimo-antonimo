@@ -37,10 +37,26 @@ local function main( )
   buzzSound   = audio.loadSound ("sounds/buzz.mp3")
 
 
+  loadsave = require( "loadsave" )
+  loadsave.changeDefault(system.ResourceDirectory)
+  data          = {}
+  data.settings = loadsave.loadTable( "settings.json" )
+
+  if ( data.settings == nil ) then
+      data.settings                   = {}
+      data.settings.musicOn           = true
+      data.settings.soundOn           = true
+      data.settings.difficulty        = "easy"
+      data.settings.highScore         = 0
+      data.settings.fases_liberadas   = 1
+      data.settings.questions         = '[[{"palavra":"casa","resposta":"lar"},{"palavra":"entrar","resposta":"sair"},{"palavra":"trabalho","resposta":"emprego"}],[{"palavra":"hate","resposta":"odio"}]]'
+      loadsave.saveTable( data.settings, "settings.json" )
+  end
+
   -- Load tela inicial
   ---------------------------------------------------------------------------------
   local composer = require "composer"
-  composer.gotoScene( "tela_inicial", { effect = "zoomInOutFade", time = 500 } )
+  composer.gotoScene( "escolher_fase", { effect = "zoomInOutFade", time = 500 } )
 end
 
 

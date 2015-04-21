@@ -22,7 +22,7 @@ local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites2
 ---------------------------------------------------------------------------------
 local sceneGroupCreate
 local data_questions
-local fases_liberadas = 1
+local fases_liberadas
 
 -- Config scene group create
 ---------------------------------------------------------------------------------
@@ -46,8 +46,8 @@ end
 -- Config data questions
 ---------------------------------------------------------------------------------
 local function config_data_questions( )
+  local json_data = data.settings.questions
   local json      = require "json"
-  local json_data = '[[{"palavra":"casa","resposta":"lar"},{"palavra":"trabalho","resposta":"emprego"}]]'
   data_questions  = json.decode(json_data)
 
   return
@@ -56,6 +56,8 @@ end
 -- Config global
 ---------------------------------------------------------------------------------
 local function config_global( sceneGroup )
+  fases_liberadas = data.settings.fases_liberadas
+
   config_scene_group_create( sceneGroup )
 
   config_background( )
@@ -181,7 +183,10 @@ function scene:show( event )
     -- Insert code here to make the scene come alive.
     -- Example: start timers, begin animation, play audio, etc.
     composer.removeScene( "tela_inicial" )
+
     composer.removeScene( "game_over" )
+
+    composer.removeScene( "fase" )
 
     if (event.params) then
       local options = {
