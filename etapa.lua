@@ -87,18 +87,18 @@ end
 -- Config etapa
 ---------------------------------------------------------------------------------
 local function config_etapa( )
-  local disk_yellow                       = display.newImage("images/puck_yellow.png")
-  disk_yellow.x, disk_yellow.y            = centerX, centerY
-  disk_yellow.alpha                       = 0.9
-  disk_yellow:addEventListener( "touch", disk_yellow )
+  -- local disk_yellow                       = display.newImage("images/puck_yellow.png")
+  -- disk_yellow.x, disk_yellow.y            = centerX, centerY
+  -- disk_yellow.alpha                       = 0.9
+  -- disk_yellow:addEventListener( "touch", disk_yellow )
 
   local etapa = params.etapa
   local texto_iniciar = display.newText( etapa, 0, 0, native.systemFontBold, 40 )
-  texto_iniciar.x, texto_iniciar.y = centerX, disk_yellow.y
-  transition.to(texto_iniciar, { time = 800, delay = 800, xScale = 2.0, yScale = 2.0, transition = easing.inOutSine })
+  texto_iniciar.x, texto_iniciar.y = centerX, centerY
+  transition.to(texto_iniciar, { time = 800, delay = 800, xScale = 4.0, yScale = 4.0, transition = easing.inOutSine })
 
   local group = display.newGroup()
-  group:insert( disk_yellow )
+  -- group:insert( disk_yellow )
   group:insert( texto_iniciar )
   sceneGroupCreate:insert( group )
 
