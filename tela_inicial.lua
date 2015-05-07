@@ -56,7 +56,7 @@ end
 ---------------------------------------------------------------------------------
 local function config_header( )
   local textField = display.newText({
-     text     = "Sinônimo \nx \nAntônimo",
+     text     = "O que é o que é?",
      x        = centerX,
      y        = 120,
      width    = 140,

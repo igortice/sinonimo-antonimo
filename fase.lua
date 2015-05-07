@@ -209,7 +209,7 @@ end
 ---------------------------------------------------------------------------------
 local function get_pergunta_fase( )
 
-  return params.questions[params.etapa].palavra:upper( )
+  return params.questions[params.etapa].palavra:lower( )
 end
 
 -- Get proxima etapa
@@ -228,7 +228,7 @@ end
 -- Get proxima fase
 ---------------------------------------------------------------------------------
 function get_proxima_fase( )
-  data.settings.fases_liberadas   = data.settings.fases_liberadas + 1
+  data.settings.fases_liberadas   = params.fase + 1
   local loadsave = require( "loadsave" )
   loadsave.saveTable( data.settings, "settings.json" )
   local options = {
