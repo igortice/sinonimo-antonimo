@@ -28,7 +28,7 @@ end
 -- Config background
 ---------------------------------------------------------------------------------
 local function config_background( )
-  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue1"))
+  local background  = display.newImage( "assets/images/bg1.jpg" )
   background.x      = centerX
   background.y      = centerY
 
@@ -55,16 +55,16 @@ end
 -- Config header
 ---------------------------------------------------------------------------------
 local function config_header( )
-  local textField = display.newText({
-     text     = "O que é o que é?",
-     x        = centerX,
-     y        = 120,
-     width    = 140,
-     fontSize = 30,
-     align    = "center",
-     font     = native.systemFontBold
-  })
-  sceneGroupCreate:insert( textField )
+  -- local textField1 = display.newEmbossedText({
+  --    text     = "o que é",
+  --    x        = centerX - 65,
+  --    y        = 50,
+  --    width    = 200,
+  --    fontSize = 55,
+  --    align    = "center",
+  --    font     = "TrashHand"
+  -- })
+  -- textField1:setTextColor( 0, 242, 232 )
 
   return
 end
@@ -73,6 +73,49 @@ end
 ---------------------------------------------------------------------------------
 -- Body
 ---------------------------------------------------------------------------------
+
+-- Config logo
+---------------------------------------------------------------------------------
+local function config_logo(  )
+  local function animar_pulsate( objeto )
+    local function1
+    local trans
+
+    local function function1(e)
+      trans = transition.to(objeto, { time = 500, xScale = 1, yScale = 1, transition = easing.linear})
+    end
+
+    transition.to(objeto, { time = 500, delay = 1000, xScale = 1.5, yScale = 1.5, transition = easing.linear, onComplete=function1})
+
+    return
+  end
+
+  local oq1 = display.newImage( "assets/images/oq1.png" )
+  oq1.x, oq1.y          = centerX - 65, 50
+  oq1.width, oq1.height = 140, 60
+
+  local interrogacao = display.newImage( "assets/images/int.png" )
+  interrogacao.x, interrogacao.y = centerX, centerY - 30
+
+  local oq2 = display.newImage( "assets/images/oq2.png" )
+  oq2.x, oq2.y          = centerX + 70, centerY + 45
+  oq2.width, oq2.height = 110, 60
+
+
+  oq1.xScale, oq1.yScale = 0.01, 0.01
+  animar_pulsate(oq1)
+
+  oq2.xScale, oq2.yScale = 0.01, 0.01
+  timer.performWithDelay( 1000, function( ) animar_pulsate(oq2); end )
+
+  local group = display.newGroup()
+  group:insert( oq1 )
+  group:insert( interrogacao )
+  group:insert( oq2 )
+  sceneGroupCreate:insert( group )
+
+  return
+end
 
 -- Config play
 ---------------------------------------------------------------------------------
@@ -87,29 +130,51 @@ local function config_play( )
     return
   end
 
-  local disk_yellow                       = display.newImage("images/puck_yellow.png")
-  disk_yellow.x, disk_yellow.y            = centerX, centerY + 50
-  disk_yellow.touch                       = onIconTouch
-  disk_yellow.alpha                       = 0.9
-  disk_yellow.width, disk_yellow.height   = 80, 80
-  disk_yellow:addEventListener( "touch", disk_yellow )
-  sceneGroupCreate:insert( disk_yellow )
-
-  local texto_iniciar = display.newText( "Jogar", 0, 0, native.systemFontBold, 22 )
-  texto_iniciar.x, texto_iniciar.y = centerX, disk_yellow.y
-
-  local group = display.newGroup()
-  group:insert( disk_yellow )
-  group:insert( texto_iniciar )
-  sceneGroupCreate:insert( group )
+  local play     = display.newImage("assets/images/play.png")
+  play.x, play.y = _W / 4.3, _H - 70
+  play.touch     = onIconTouch
+  play:addEventListener( "touch", play )
+  sceneGroupCreate:insert( play )
 
   return
+end
+
+
+
+-- Config config
+---------------------------------------------------------------------------------
+local function config_config( )
+  local function onIconTouch( self, event )
+    if event.phase == "began" then
+      audio.play( popSound )
+
+      composer.gotoScene( "escolher_fase", { effect = "zoomInOutFade" } )
+    end
+
+    return
+  end
+
+  local config        = display.newImage("assets/images/config.png")
+  config.x, config.y  = _W / 1.3, _H - 70
+  config.touch        = onIconTouch
+  config:addEventListener( "touch", config )
+  sceneGroupCreate:insert( config )
+
+  return
+end
+
+local function config_menu( )
+  config_play( )
+
+  config_config( )
 end
 
 -- Config body
 ---------------------------------------------------------------------------------
 local function config_body( )
-  config_play( )
+  config_logo( )
+
+  config_menu( )
 
   return
 end

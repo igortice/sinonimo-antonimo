@@ -33,9 +33,8 @@ local function main( )
   _W        = display.contentWidth
   _H        = display.contentHeight
 
-  popSound    = audio.loadSound ("sounds/pop2_wav.wav")
-  buzzSound   = audio.loadSound ("sounds/buzz.mp3")
-
+  popSound    = audio.loadSound ("assets/sounds/pop2_wav.wav")
+  buzzSound   = audio.loadSound ("assets/sounds/buzz.mp3")
 
   local loadsave  = require( "loadsave" )
   data            = {}
@@ -49,7 +48,7 @@ local function main( )
       data.settings.difficulty        = "easy"
       data.settings.highScore         = 0
       data.settings.fases_liberadas   = 1
-      data.settings.questions         = '[[{"palavra":"O que é que é surdo e mudo, mas conta tudo?","resposta":"livro"}],[{"palavra":"hate","resposta":"odio"}]]'
+      data.settings.questions         = '[[{"palavra":"é surdo e mudo, mas conta tudo?","resposta":"livro"},{"palavra":"tem barba e não é bode tem dentes e não morde?","resposta":"bode"},{"palavra":"fruta que tem a semente por fora da casca?","resposta":"caju"},{"palavra":"Quanto mais se perde mais se tem?","resposta":"sono"}],[{"palavra":"hate","resposta":"odio"}]]'
       loadsave.saveTable( data.settings, "settings.json" )
   end
 

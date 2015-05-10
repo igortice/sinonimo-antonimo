@@ -52,6 +52,7 @@ settings =
 				"Icon-Small-50.png",
 				"Icon-Small-50@2x.png",
 			},
+			UIAppFonts = { "TrashHand.ttf"  }
 
 			--[[
 			-- iOS app URL schemes:
