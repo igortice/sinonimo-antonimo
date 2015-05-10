@@ -28,7 +28,7 @@ end
 -- Config background
 ---------------------------------------------------------------------------------
 local function config_background( )
-  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue1"))
+  local background  = display.newImage( "assets/images/bg2.jpg" )
   background.x      = centerX
   background.y      = centerY
 
@@ -77,16 +77,16 @@ local function config_body( )
     return
   end
 
-  local texto_game_over                           = display.newText( "Game Over", 0, 0, native.systemFontBold, 24 )
+  local texto_game_over                           = display.newText( "Game Over", 0, 0, "TrashHand", 30 )
   texto_game_over.xScale, texto_game_over.yScale  = 0, 0
   texto_game_over.x, texto_game_over.y            = centerX, centerY
-  texto_game_over:setFillColor( 255 )
+  texto_game_over:setTextColor( 0.3683, 0.3683, 0.3683 )
   transition.to(texto_game_over, { time = 1800, delay = 800,xScale = 2.0, yScale = 2.0, transition = easing.outElastic })
 
-  local texto_retornar = display.newText( "retornar", 0, 0, native.systemFontBold, 24 )
-  texto_retornar:setFillColor( 255 )
+  local texto_retornar = display.newText( "retornar", 0, 0, "TrashHand", 24 )
+  texto_retornar:setTextColor( 0.3683, 0.3683, 0.3683 )
   texto_retornar.x, texto_retornar.y  = centerX, centerY + 150
-  texto_retornar.touch               = onIconTouch
+  texto_retornar.touch                = onIconTouch
   texto_retornar:addEventListener( "touch", texto_retornar )
 
   local group = display.newGroup()

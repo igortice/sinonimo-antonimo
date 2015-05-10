@@ -110,7 +110,7 @@ local function config_count_timer( )
      text     = params.tempo,
      x        = disk_verde.x,
      y        = disk_verde.y,
-     fontSize = 15,
+     fontSize = 13,
      font     = "TrashHand"
   })
   displayTime:setTextColor( 0.3683, 0.3683, 0.3683 )
@@ -144,23 +144,39 @@ end
 --  Config lifes
 ---------------------------------------------------------------------------------
 local function config_lifes( )
-  for i=1, quantidade_lifes do
-    if not lifes_imagens[i] then
-      lifes_imagens[i] = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart"))
-    end
 
-    if params.quantidade_erros >= i then
-      lifes_imagens[i]:removeSelf()
+  local disk_verde       = display.newImage("assets/images/c_life.png")
+  disk_verde.width, disk_verde.height = 45, 45
+  disk_verde.x, disk_verde.y = _W- 60, 25
+  sceneGroupCreate:insert( disk_verde )
 
-      lifes_imagens[i] = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart_empty"))
+  local textField = display.newText({
+     text     = quantidade_lifes - params.quantidade_erros,
+     x        = disk_verde.x + 1,
+     y        = disk_verde.y,
+     fontSize = 13,
+     font     = "TrashHand"
+  })
+  textField:setTextColor( 0.3683, 0.3683, 0.3683 )
+  sceneGroupCreate:insert( textField )
 
-      transition.to(lifes_imagens[i], { time = 800, xScale = 0.5, yScale = 0.5, transition = easing.outElastic  })
-    end
+  -- for i=1, quantidade_lifes do
+  --   if not lifes_imagens[i] then
+  --     lifes_imagens[i] = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart"))
+  --   end
 
-    lifes_imagens[i].width, lifes_imagens[i].height = 15, 15
-    lifes_imagens[i].x, lifes_imagens[i].y          = _W - 115 + (i*20), 20
-    sceneGroupCreate:insert( lifes_imagens[i] )
-  end
+  --   if params.quantidade_erros >= i then
+  --     lifes_imagens[i]:removeSelf()
+
+  --     lifes_imagens[i] = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart_empty"))
+
+  --     transition.to(lifes_imagens[i], { time = 800, xScale = 0.5, yScale = 0.5, transition = easing.outElastic  })
+  --   end
+
+  --   lifes_imagens[i].width, lifes_imagens[i].height = 15, 15
+  --   lifes_imagens[i].x, lifes_imagens[i].y          = _W - 115 + (i*20), 20
+  --   sceneGroupCreate:insert( lifes_imagens[i] )
+  -- end
 
   return
 end
@@ -297,7 +313,7 @@ local function config_questions( )
      x        = centerX,
      y        = 110,
      width    = _W - 100,
-     fontSize = 25,
+     fontSize = 22,
      align    = "center",
      font     = "TrashHand"
   })
@@ -305,7 +321,7 @@ local function config_questions( )
 
   set_question( )
 
-  retangulo = display.newRect( centerX, pergunta.y, _W , 120 )
+  retangulo = display.newRect( centerX, pergunta.y + 3, _W , 120 )
   -- retangulo.strokeWidth = 3
   retangulo.alpha       = 0.3
   -- retangulo:setFillColor( 0 )
