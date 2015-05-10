@@ -62,7 +62,7 @@ end
 -- Config background
 ---------------------------------------------------------------------------------
 local function config_background( )
-  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue3"))
+  local background  = display.newImage( "assets/images/bg2.jpg" )
   background.x      = display.contentCenterX
   background.y      = display.contentCenterY
   sceneGroupCreate:insert( background )
@@ -101,14 +101,19 @@ end
 -- Config count timer
 ---------------------------------------------------------------------------------
 local function config_count_timer( )
+  local disk_verde       = display.newImage("assets/images/c_verde.png")
+  disk_verde.width, disk_verde.height = 45, 45
+  disk_verde.x, disk_verde.y = 60, 25
+  sceneGroupCreate:insert( disk_verde )
+
   displayTime = display.newText({
      text     = params.tempo,
-     x        = centerX,
-     y        = 20,
-     width    = _W - 100,
-     fontSize = 20,
-     align    = "left"
+     x        = disk_verde.x,
+     y        = disk_verde.y,
+     fontSize = 15,
+     font     = "TrashHand"
   })
+  displayTime:setTextColor( 0.3683, 0.3683, 0.3683 )
   sceneGroupCreate:insert( displayTime )
 
   local levelTime = tempo_to_seconds
@@ -149,7 +154,7 @@ local function config_lifes( )
 
       lifes_imagens[i] = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("heart_empty"))
 
-      transition.to(lifes_imagens[i], { time = 800, xScale = 1.5, yScale = 1.5, transition = easing.outElastic  })
+      transition.to(lifes_imagens[i], { time = 800, xScale = 0.5, yScale = 0.5, transition = easing.outElastic  })
     end
 
     lifes_imagens[i].width, lifes_imagens[i].height = 15, 15
@@ -179,12 +184,20 @@ end
 -- Config name fase
 ---------------------------------------------------------------------------------
 local function config_nome_fase( )
+
+  local disk_verde       = display.newImage("assets/images/c_verde.png")
+  disk_verde.width, disk_verde.height = 45, 45
+  disk_verde.x, disk_verde.y = centerX, 25
+  sceneGroupCreate:insert( disk_verde )
+
   local textField = display.newText({
      text     = params.etapa .. " - " .. #params.questions,
-     x        = centerX,
-     y        = 20,
-     fontSize = 20
+     x        = disk_verde.x,
+     y        = disk_verde.y,
+     fontSize = 13,
+     font     = "TrashHand"
   })
+  textField:setTextColor( 0.3683, 0.3683, 0.3683 )
   sceneGroupCreate:insert( textField )
 
   return
@@ -217,7 +230,7 @@ end
 function get_proxima_etapa( )
   params.tempo  = displayTime.text
   local options = {
-    effect  = "flipFadeOutIn",
+    effect  = "fromLeft",
     params  = params
   }
   composer.gotoScene( "etapa", options )
@@ -257,7 +270,7 @@ local function set_resposta( letra )
   end
 
   for i=1, #resposta do
-    local palavra = '__'
+    local palavra = '_'
     if resposta_usuario_array and resposta_usuario_array[i] ~= nil then
       palavra = resposta_usuario_array[i]
     end
@@ -284,17 +297,19 @@ local function config_questions( )
      x        = centerX,
      y        = 110,
      width    = _W - 100,
-     fontSize = 20,
-     align    = "center"
+     fontSize = 25,
+     align    = "center",
+     font     = "TrashHand"
   })
+  pergunta:setTextColor( 0.3683, 0.3683, 0.3683 )
 
   set_question( )
 
   retangulo = display.newRect( centerX, pergunta.y, _W , 120 )
-  retangulo.strokeWidth = 3
-  retangulo.alpha       = 0.5
-  retangulo:setFillColor( 0 )
-  retangulo:setStrokeColor( 1, 1, 1 )
+  -- retangulo.strokeWidth = 3
+  retangulo.alpha       = 0.3
+  -- retangulo:setFillColor( 0 )
+  -- retangulo:setStrokeColor( 1, 1, 1 )
 
   local group = display.newGroup()
   group:insert( retangulo )
@@ -316,9 +331,9 @@ local function check_letra( letra )
   end
 
   function function2( )
-    retangulo:setFillColor( 0 )
+    retangulo:setFillColor( 1 )
 
-    transition.to( retangulo, { time=100, alpha=0.5 } )
+    transition.to( retangulo, { time=100, alpha=0.3 } )
 
     return
   end
@@ -337,7 +352,7 @@ local function check_letra( letra )
     audio.play( popSound )
   end
 
-  transition.to( retangulo, { time=100, alpha=0.5, onComplete = function1 } )
+  transition.to( retangulo, { time=100, alpha=0.3, onComplete = function1 } )
 
   pergunta.text = get_pergunta_fase( ) .. "\n" .. set_resposta( letra )
   local res_usu = ""
@@ -417,7 +432,7 @@ local function config_letras_body( )
       audio.play( popSound )
 
       local letra                                       = letras_body[i]
-      local path_letra                                  = "images/alfabeto/" .. letra .. ".png"
+      local path_letra                                  = "assets/images/alfabeto/" .. letra .. ".png"
       all_objects_alfabeto[#all_objects_alfabeto + 1]   = display.newImage( path_letra )
 
       local object_alfabeto                           = all_objects_alfabeto[#all_objects_alfabeto]

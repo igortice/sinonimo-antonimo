@@ -36,7 +36,7 @@ end
 -- Config background
 ---------------------------------------------------------------------------------
 local function config_background( sceneGroup )
-  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue3"))
+  local background  = display.newImage( "assets/images/bg2.jpg" )
   background.x      = centerX
   background.y      = centerY
 
@@ -66,14 +66,15 @@ end
 ---------------------------------------------------------------------------------
 local function config_header( )
   local textField = display.newText({
-     text     = "Etapa",
+     text     = "Pergunta",
      x        = centerX,
      y        = 120,
      width    = _W,
-     fontSize = 50,
+     fontSize = 60,
      align    = "center",
-     font     = native.systemFontBold
+     font     = "TrashHand"
   })
+  textField:setTextColor( 0.3683, 0.3683, 0.3683 )
   sceneGroupCreate:insert( textField )
 
   return
@@ -93,12 +94,12 @@ local function config_etapa( )
   -- disk_yellow:addEventListener( "touch", disk_yellow )
 
   local etapa = params.etapa
-  local texto_iniciar = display.newText( etapa, 0, 0, native.systemFontBold, 40 )
+  local texto_iniciar = display.newText( etapa, 0, 0, "TrashHand", 40 )
   texto_iniciar.x, texto_iniciar.y = centerX, centerY
-  transition.to(texto_iniciar, { time = 800, delay = 800, xScale = 4.0, yScale = 4.0, transition = easing.inOutSine })
+  texto_iniciar:setTextColor( 0.3683, 0.3683, 0.3683 )
+  transition.to(texto_iniciar, { time = 1000, delay = 800, xScale = 4.0, yScale = 4.0, transition = easing.inOutSine })
 
   local group = display.newGroup()
-  -- group:insert( disk_yellow )
   group:insert( texto_iniciar )
   sceneGroupCreate:insert( group )
 
@@ -107,7 +108,7 @@ end
 
 local function init_etapa_fase( )
   local options = {
-    effect    = "flip",
+    effect    = "fromRight",
     delay     = 800,
     params    = params
   }

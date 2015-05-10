@@ -13,11 +13,6 @@
 local composer  = require "composer"
 local scene     = composer.newScene()
 
--- Require glyphicons
----------------------------------------------------------------------------------
-local glyphicons        = require("glyphicons")
-local glyphicons_sprite = graphics.newImageSheet("glyphicons/glyphicons_sprites2.png", glyphicons:getSheet())
-
 -- Config variaveis
 ---------------------------------------------------------------------------------
 local sceneGroupCreate
@@ -76,7 +71,8 @@ end
 ---------------------------------------------------------------------------------
 local function config_header( )
   local texto_head            = display.newText( "Fases", 0, 0, "TrashHand", 60 )
-  texto_head.x, texto_head.y  = centerX, 70
+  texto_head.x, texto_head.y  = centerX, 60
+  texto_head:setTextColor( 0.3683, 0.3683, 0.3683 )
   sceneGroupCreate:insert( texto_head )
 
   return
