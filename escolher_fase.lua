@@ -35,7 +35,7 @@ end
 -- Config background
 ---------------------------------------------------------------------------------
 local function config_background( )
-  local background  = display.newImage( background_sheet_sprite , background_sheet:getFrameIndex("bg_blue2"))
+  local background  = display.newImage( "assets/images/bg2.jpg" )
   background.x      = centerX
   background.y      = centerY
   sceneGroupCreate:insert( background )
@@ -75,8 +75,8 @@ end
 -- Config header
 ---------------------------------------------------------------------------------
 local function config_header( )
-  local texto_head            = display.newText( "Fases", 0, 0, native.systemFontBold, 30 )
-  texto_head.x, texto_head.y  = centerX, 50
+  local texto_head            = display.newText( "Fases", 0, 0, "TrashHand", 60 )
+  texto_head.x, texto_head.y  = centerX, 70
   sceneGroupCreate:insert( texto_head )
 
   return
@@ -123,20 +123,23 @@ local function config_display_fases( )
       x = 3
     end
 
-    local disk_yellow = display.newImage("images/puck_yellow.png")
-    disk_yellow.x, disk_yellow.y            = tamanho_rec + init_rect_x[x], tamanho_rec + y
-    disk_yellow.touch                       = onFaseTouch
-    disk_yellow.fase                        = numero_fase
-    disk_yellow.xScale, disk_yellow.yScale  = 0.5, 0.5
-    sceneGroupCreate:insert( disk_yellow )
-
     if fases_liberadas < numero_fase then
-      local icon              = display.newImage(glyphicons_sprite, glyphicons:getFrameIndex("lock"))
-      icon.x, icon.y          = disk_yellow.x, disk_yellow.y
-      icon.width, icon.height = 18, 20
-      sceneGroupCreate:insert( icon )
+      local disk_cade                     = display.newImage("assets/images/c_cade.png")
+      disk_cade.x, disk_cade.y            = tamanho_rec + init_rect_x[x], tamanho_rec + y
+      disk_cade.touch                     = onFaseTouch
+      disk_cade.fase                      = numero_fase
+      disk_cade.xScale, disk_cade.yScale  = 0.5, 0.5
+      sceneGroupCreate:insert( disk_cade )
     else
-      local texto_numero_fase                   = display.newText( numero_fase, 0, 0, native.systemFontBold, 24 )
+
+
+      local disk_yellow = display.newImage("assets/images/c_yellow.png")
+      disk_yellow.x, disk_yellow.y            = tamanho_rec + init_rect_x[x], tamanho_rec + y
+      disk_yellow.touch                       = onFaseTouch
+      disk_yellow.fase                        = numero_fase
+      disk_yellow.xScale, disk_yellow.yScale  = 0.5, 0.5
+      sceneGroupCreate:insert( disk_yellow )
+      local texto_numero_fase                   = display.newText( numero_fase, 0, 0, "TrashHand", 30 )
       texto_numero_fase.x, texto_numero_fase.y  = disk_yellow.x, disk_yellow.y
       sceneGroupCreate:insert( texto_numero_fase )
       disk_yellow:addEventListener( "touch", disk_yellow )

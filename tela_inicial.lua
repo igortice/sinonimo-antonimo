@@ -167,6 +167,8 @@ local function config_menu( )
   config_play( )
 
   config_config( )
+
+  return
 end
 
 -- Config body
