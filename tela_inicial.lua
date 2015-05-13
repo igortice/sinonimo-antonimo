@@ -85,7 +85,7 @@ local function config_logo(  )
       trans = transition.to(objeto, { time = 500, xScale = 1, yScale = 1, transition = easing.linear})
     end
 
-    transition.to(objeto, { time = 500, delay = 1000, xScale = 1.5, yScale = 1.5, transition = easing.linear, onComplete=function1})
+    transition.to(objeto, { time = 500, delay = 500, xScale = 1.5, yScale = 1.5, transition = easing.linear, onComplete=function1})
 
     return
   end
@@ -106,7 +106,7 @@ local function config_logo(  )
   animar_pulsate(oq1)
 
   oq2.xScale, oq2.yScale = 0.01, 0.01
-  timer.performWithDelay( 1000, function( ) animar_pulsate(oq2); end )
+  timer.performWithDelay( 800, function( ) animar_pulsate(oq2); end )
 
   local group = display.newGroup()
   group:insert( oq1 )
@@ -122,7 +122,7 @@ end
 local function config_play( )
   local function onIconTouch( self, event )
     if event.phase == "began" then
-      audio.play( popSound )
+      play_pop_sound( )
 
       composer.gotoScene( "escolher_fase", { effect = "zoomInOutFade" } )
     end
@@ -146,9 +146,9 @@ end
 local function config_config( )
   local function onIconTouch( self, event )
     if event.phase == "began" then
-      audio.play( popSound )
+      play_pop_sound( )
 
-      composer.gotoScene( "escolher_fase", { effect = "zoomInOutFade" } )
+      composer.gotoScene( "configuracoes", { effect = "zoomInOutFade" } )
     end
 
     return
@@ -174,8 +174,6 @@ end
 -- Config body
 ---------------------------------------------------------------------------------
 local function config_body( )
-  config_logo( )
-
   config_menu( )
 
   return
@@ -222,10 +220,15 @@ function scene:show( event )
 
   if ( phase == "will" ) then
     -- Called when the scene is still off screen (but is about to come on screen).
+
+    config_logo( )
   elseif ( phase == "did" ) then
     -- Called when the scene is now on screen.
     -- Insert code here to make the scene come alive.
     -- Example: start timers, begin animation, play audio, etc.
+    composer.removeScene( "escolher_fase" )
+
+    composer.removeScene( "configuracoes" )
   end
 
   return

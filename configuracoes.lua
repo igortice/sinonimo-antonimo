@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------
 --
--- game_over.lua
+-- configuracoes.lua
 --
 ---------------------------------------------------------------------------------
 
@@ -37,20 +37,6 @@ local function config_background( )
   return
 end
 
--- Config game over
----------------------------------------------------------------------------------
-local function config_game_over( )
-  local texto_game_over                           = display.newText( "Game Over", 0, 0, "TrashHand", 30 )
-  texto_game_over.xScale, texto_game_over.yScale  = 0, 0
-  texto_game_over.x, texto_game_over.y            = centerX, centerY
-  texto_game_over:setTextColor( 0.3683, 0.3683, 0.3683 )
-  transition.to(texto_game_over, { time = 1800, delay = 800,xScale = 2.0, yScale = 2.0, transition = easing.outElastic })
-
-  sceneGroupCreate:insert( texto_game_over )
-
-  return
-end
-
 -- Config global
 ---------------------------------------------------------------------------------
 local function config_global( sceneGroup )
@@ -69,6 +55,12 @@ end
 -- Config header
 ---------------------------------------------------------------------------------
 local function config_header( )
+  local texto_head            = display.newText( "Configurações", 0, 0, "TrashHand", 40 )
+  texto_head.x, texto_head.y  = centerX, 40
+  texto_head:setTextColor( 0.3683, 0.3683, 0.3683 )
+  sceneGroupCreate:insert( texto_head )
+
+  return
 end
 
 
@@ -76,9 +68,62 @@ end
 -- Body
 ---------------------------------------------------------------------------------
 
+-- Config som
+---------------------------------------------------------------------------------
+local function config_som( )
+  local abilitar_som_status = display.newText( "", 0, 0, "TrashHand", 24 )
+
+  local function onIconTouch( self, event )
+    if event.phase == "began" then
+      play_pop_sound( )
+
+      data.settings.soundOn = not data.settings.soundOn
+      local loadsave = require( "loadsave" )
+      loadsave.saveTable( data.settings, "settings.json" )
+
+      if (data.settings.soundOn) then
+        abilitar_som_status.text = "Sim"
+      else
+        abilitar_som_status.text = "Não"
+      end
+
+    end
+
+    return
+  end
+
+  local texto_abilitar_som = display.newText( "som abilitado?", 0, 0, "TrashHand", 24 )
+  texto_abilitar_som:setTextColor( 0.3683, 0.3683, 0.3683 )
+  texto_abilitar_som.x, texto_abilitar_som.y  = centerX, 100
+
+  local btn_abilitar_som                  = display.newImage("assets/images/c_verde.png")
+  btn_abilitar_som.x, btn_abilitar_som.y  = texto_abilitar_som.x, texto_abilitar_som.y + 50
+  btn_abilitar_som.touch                  = onIconTouch
+  btn_abilitar_som:addEventListener( "touch", btn_abilitar_som )
+
+  
+  if (data.settings.soundOn) then
+    abilitar_som_status.text = "Sim"
+  else
+    abilitar_som_status.text = "Não"
+  end
+  abilitar_som_status:setTextColor( 0.3683, 0.3683, 0.3683 )
+  abilitar_som_status.x, abilitar_som_status.y  = btn_abilitar_som.x, btn_abilitar_som.y
+
+  local group = display.newGroup()
+  group:insert( texto_abilitar_som )
+  group:insert( btn_abilitar_som )
+  group:insert( abilitar_som_status )
+  sceneGroupCreate:insert( group )
+
+  return
+end
+
+
 -- Config body
 ---------------------------------------------------------------------------------
 local function config_body( )
+  config_som( )
 
   return
 end
@@ -95,7 +140,7 @@ local function config_footer( )
     if event.phase == "began" then
       play_pop_sound( )
 
-      composer.gotoScene( "escolher_fase", { effect = "zoomInOutFade", time = 500 } )
+      composer.gotoScene( "tela_inicial", { effect = "zoomInOutFade", time = 500 } )
     elseif event.phase == "ended" or event.phase == "cancelled" then
       self.alpha = 0.25
     end
@@ -111,6 +156,8 @@ local function config_footer( )
   texto_retornar:addEventListener( "touch", texto_retornar )
 
   sceneGroupCreate:insert( texto_retornar )
+
+  return
 end
 
 
@@ -137,12 +184,11 @@ function scene:show( event )
 
   if ( phase == "will" ) then
     -- Called when the scene is still off screen (but is about to come on screen).
-    config_game_over( )
   elseif ( phase == "did" ) then
     -- Called when the scene is now on screen.
     -- Insert code here to make the scene come alive.
     -- Example: start timers, begin animation, play audio, etc.
-    composer.removeScene( "fase" )
+    composer.removeScene( "tela_inicial" )
   end
 end
 

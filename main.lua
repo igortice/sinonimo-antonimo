@@ -33,15 +33,15 @@ local function main( )
   _W        = display.contentWidth
   _H        = display.contentHeight
 
-  popSound    = audio.loadSound ("assets/sounds/pop2_wav.wav")
-  buzzSound   = audio.loadSound ("assets/sounds/buzz.mp3")
+  local popSound    = audio.loadSound ("assets/sounds/pop2_wav.wav")
+  local buzzSound   = audio.loadSound ("assets/sounds/buzz.mp3")
 
   local loadsave  = require( "loadsave" )
   data            = {}
   data.settings   = loadsave.loadTable( "settings.json" )
 
-  -- if ( data.settings == nil ) then
-  if ( true ) then
+  if ( data.settings == nil ) then
+  -- if ( true ) then
       data.settings                   = {}
       data.settings.musicOn           = true
       data.settings.soundOn           = true
@@ -52,10 +52,26 @@ local function main( )
       loadsave.saveTable( data.settings, "settings.json" )
   end
 
+  function play_pop_sound( )
+    if (data.settings.soundOn) then
+        audio.play( popSound )
+    end
+
+    return
+  end
+
+  function play_buzz_sound( )
+    if (data.settings.soundOn) then
+        audio.play( buzzSound )
+    end
+
+    return
+  end
+
   -- Load tela inicial
   ---------------------------------------------------------------------------------
   local composer = require "composer"
-  composer.gotoScene( "game_over", { effect = "zoomInOutFade", time = 500 } )
+  composer.gotoScene( "tela_inicial", { effect = "zoomInOutFade", time = 500 } )
 end
 
 

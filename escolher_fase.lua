@@ -71,7 +71,7 @@ end
 ---------------------------------------------------------------------------------
 local function config_header( )
   local texto_head            = display.newText( "Fases", 0, 0, "TrashHand", 60 )
-  texto_head.x, texto_head.y  = centerX, 60
+  texto_head.x, texto_head.y  = centerX, 40
   texto_head:setTextColor( 0.3683, 0.3683, 0.3683 )
   sceneGroupCreate:insert( texto_head )
 
@@ -88,7 +88,7 @@ end
 local function config_display_fases( )
   local function onFaseTouch( self, event )
     if event.phase == "began" then
-      audio.play( popSound )
+      play_pop_sound( )
 
       local options = {
         effect  = "zoomInOutFade",
@@ -108,7 +108,7 @@ local function config_display_fases( )
 
   local tamanho_rec = _W * 0.20
   local init_rect_x = {10, 100, 188}
-  local x, y        = 0, 0
+  local x, y        = 0, - 17
   for numero_fase=1,12 do
     if numero_fase % 3 ~= 0 then
       x = numero_fase % 3
@@ -153,6 +153,28 @@ local function config_body( )
   return
 end
 
+local function config_footer( )
+  local function onIconTouch( self, event )
+    if event.phase == "began" then
+      play_pop_sound( )
+
+      composer.gotoScene( "tela_inicial", { effect = "zoomInOutFade", time = 500 } )
+    elseif event.phase == "ended" or event.phase == "cancelled" then
+      self.alpha = 0.25
+    end
+
+    return
+  end
+
+  local texto_retornar = display.newText( "retornar", 0, 0, "TrashHand", 24 )
+  texto_retornar:setTextColor( 0.3683, 0.3683, 0.3683 )
+  texto_retornar.x, texto_retornar.y  = centerX, _H - 50
+  texto_retornar.touch                = onIconTouch
+  texto_retornar:addEventListener( "touch", texto_retornar )
+
+  sceneGroupCreate:insert( texto_retornar )
+end
+
 
 ---------------------------------------------------------------------------------
 -- "scene:create()"
@@ -163,6 +185,8 @@ function scene:create( event )
   config_header( )
 
   config_body( )
+
+  config_footer( )
 
   return
 end

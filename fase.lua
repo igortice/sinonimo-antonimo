@@ -313,7 +313,7 @@ local function config_questions( )
      x        = centerX,
      y        = 110,
      width    = _W - 100,
-     fontSize = 22,
+     fontSize = 25,
      align    = "center",
      font     = "TrashHand"
   })
@@ -354,18 +354,16 @@ local function check_letra( letra )
     return
   end
 
-
-
   if #allIndexOf( resposta_array, letra) == 0 then
     config_remover_life( )
 
-    audio.play( buzzSound )
+    play_buzz_sound( )
 
     retangulo:setFillColor(255, 0, 0)
   else
     retangulo:setFillColor(128, 255, 0)
 
-    audio.play( popSound )
+    play_pop_sound( )
   end
 
   transition.to( retangulo, { time=100, alpha=0.3, onComplete = function1 } )
@@ -413,7 +411,7 @@ local function config_letras_body( )
         end
 
         if object_alfabeto.x < 10 or object_alfabeto.x > _W - 10 or object_alfabeto.y < -1 or object_alfabeto.y > _H - 10 then
-          audio.play( popSound )
+          play_pop_sound( )
 
           -- object_alfabeto:removeSelf()
           object_alfabeto.isAwake = false
@@ -445,7 +443,7 @@ local function config_letras_body( )
     letras_body = shuffleTable( letras_body )
 
     for i=1, #letras_body do
-      audio.play( popSound )
+      play_pop_sound( )
 
       local letra                                       = letras_body[i]
       local path_letra                                  = "assets/images/alfabeto/" .. letra .. ".png"
@@ -521,16 +519,16 @@ function scene:show( event )
 
   if ( phase == "will" ) then
     -- Called when the scene is still off screen (but is about to come on screen).
+
+    config_count_timer( )
   elseif ( phase == "did" ) then
     -- Called when the scene is now on screen.
     -- Insert code here to make the scene come alive.
     -- Example: start timers, begin animation, play audio, etc.
 
+    config_gerar_letras_etapa( )
+    
     composer.removeScene( "etapa" )
-
-    config_count_timer( )
-
-    config_gerar_letras_etapa()
   end
 
   return
