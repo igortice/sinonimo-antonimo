@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------
 --
--- tela_inicial.lua
+-- configuracoes.lua
 --
 ---------------------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ end
 -- Config background
 ---------------------------------------------------------------------------------
 local function config_background( )
-  local background  = display.newImage( "assets/images/bg1.jpg" )
+  local background  = display.newImage( "assets/images/bg2.jpg" )
   background.x      = centerX
   background.y      = centerY
 
@@ -55,16 +55,10 @@ end
 -- Config header
 ---------------------------------------------------------------------------------
 local function config_header( )
-  -- local textField1 = display.newEmbossedText({
-  --    text     = "o que é",
-  --    x        = centerX - 65,
-  --    y        = 50,
-  --    width    = 200,
-  --    fontSize = 55,
-  --    align    = "center",
-  --    font     = "TrashHand"
-  -- })
-  -- textField1:setTextColor( 0, 242, 232 )
+  local texto_head            = display.newText( "Créditos", 0, 0, "TrashHand", 40 )
+  texto_head.x, texto_head.y  = centerX, 40
+  texto_head:setTextColor( 0.3683, 0.3683, 0.3683 )
+  sceneGroupCreate:insert( texto_head )
 
   return
 end
@@ -74,123 +68,45 @@ end
 -- Body
 ---------------------------------------------------------------------------------
 
--- Config logo
+-- Config equipe
 ---------------------------------------------------------------------------------
-local function config_logo(  )
-  local oq1 = display.newImage( "assets/images/oq1.png" )
-  oq1.x, oq1.y          = centerX - 65, 50
-  oq1.width, oq1.height = 140, 60
+local function config_equipe( )
+  local group   = display.newGroup()
+  local default_texto = {
+     text     = '',
+     x        = centerX,
+     y        = 115,
+     width    = _W - 50,
+     fontSize = 20,
+     align    = "center",
+     font     = "TrashHand"
+  }
+  local c         = {}
 
-  local interrogacao = display.newImage( "assets/images/int.png" )
-  interrogacao.x, interrogacao.y = centerX, centerY - 30
+  c[1]            = display.newText(default_texto)
+  c[1].text       = "Desenvolvedor\nIgor Rocha"
 
-  local oq2 = display.newImage( "assets/images/oq2.png" )
-  oq2.x, oq2.y          = centerX + 70, centerY + 45
-  oq2.width, oq2.height = 110, 60
+  c[2]            = display.newText(default_texto)
+  c[2].text       = "Designer\nMilena Matos"
 
 
-  oq1.xScale, oq1.yScale = 0.01, 0.01
-  animar_pulsate(oq1)
+  c[3]            = display.newText(default_texto)
+  c[3].text       = "Orientador\nEduardo Mendes"
 
-  oq2.xScale, oq2.yScale = 0.01, 0.01
-  timer.performWithDelay( 800, function( ) animar_pulsate(oq2); end )
+  c[4]            = display.newText(default_texto)
+  c[4].text       = "Estágio 1\nFA7"
 
-  local function1, function2
-  local trans
 
-  function function1(e)
-    transition.to(interrogacao, { time = 500, delay = 500, rotation = -10, onComplete=function2})
+  for i=1, #c do
+    if (i > 1) then
+      c[i].y          = c[i-1].y + 80
+    end
+    timer.performWithDelay( 1000 * i, function( ) animar_pulsate(c[i], 2.0, 1.2 ); end )
+    c[i]:setTextColor( 0.3683, 0.3683, 0.3683 )
+    group:insert( c[i] )
   end
 
-  function function2(e)
-    transition.to(interrogacao, { time = 500, delay = 500, rotation = 0})
-  end
-
-  timer.performWithDelay( 2000, function( ) transition.to(interrogacao, { time = 500, rotation = 10, onComplete=function1}); end )
-
-  local group = display.newGroup()
-  group:insert( oq1 )
-  group:insert( interrogacao )
-  group:insert( oq2 )
   sceneGroupCreate:insert( group )
-
-  return
-end
-
--- Config play
----------------------------------------------------------------------------------
-local function config_play( )
-  local function onIconTouch( self, event )
-    if event.phase == "began" then
-      play_pop_sound( )
-
-      composer.gotoScene( "escolher_fase", { effect = "zoomInOutFade" } )
-    end
-
-    return
-  end
-
-  local play     = display.newImage("assets/images/play.png")
-  play.x, play.y = _W / 4.3, _H - 70
-  play.touch     = onIconTouch
-  play:addEventListener( "touch", play )
-  sceneGroupCreate:insert( play )
-
-  return
-end
-
--- Config creditos
----------------------------------------------------------------------------------
-local function config_creditos( )
-  local function onIconTouch( self, event )
-    if event.phase == "began" then
-      play_pop_sound( )
-
-      composer.gotoScene( "creditos", { effect = "zoomInOutFade" } )
-    end
-
-    return
-  end
-
-  local play     = display.newImage("assets/images/creditos.png")
-  play.x, play.y = centerX, _H - 70
-  play.touch     = onIconTouch
-  play:addEventListener( "touch", play )
-  sceneGroupCreate:insert( play )
-
-  return
-end
-
-
-
--- Config config
----------------------------------------------------------------------------------
-local function config_config( )
-  local function onIconTouch( self, event )
-    if event.phase == "began" then
-      play_pop_sound( )
-
-      composer.gotoScene( "configuracoes", { effect = "zoomInOutFade" } )
-    end
-
-    return
-  end
-
-  local config        = display.newImage("assets/images/config.png")
-  config.x, config.y  = _W / 1.3, _H - 70
-  config.touch        = onIconTouch
-  config:addEventListener( "touch", config )
-  sceneGroupCreate:insert( config )
-
-  return
-end
-
-local function config_menu( )
-  config_play( )
-
-  config_creditos( )
-
-  config_config( )
 
   return
 end
@@ -198,7 +114,6 @@ end
 -- Config body
 ---------------------------------------------------------------------------------
 local function config_body( )
-  config_menu( )
 
   return
 end
@@ -211,9 +126,26 @@ end
 -- Config footer
 ---------------------------------------------------------------------------------
 local function config_footer( )
-  local texto_autor             = display.newText( "por Igor Rocha", 0, 0, native.systemFontBold, 12 )
-  texto_autor.x, texto_autor.y  = centerX, _H - 20
-  sceneGroupCreate:insert( texto_autor )
+  local function onIconTouch( self, event )
+    if event.phase == "began" then
+      play_pop_sound( )
+
+      composer.gotoScene( "tela_inicial", { effect = "zoomInOutFade", time = 500 } )
+    elseif event.phase == "ended" or event.phase == "cancelled" then
+      self.alpha = 0.25
+    end
+
+    return
+  end
+
+
+  local texto_retornar = display.newText( "retornar", 0, 0, "TrashHand", 24 )
+  texto_retornar:setTextColor( 0.3683, 0.3683, 0.3683 )
+  texto_retornar.x, texto_retornar.y  = centerX, _H - 50
+  texto_retornar.touch                = onIconTouch
+  texto_retornar:addEventListener( "touch", texto_retornar )
+
+  sceneGroupCreate:insert( texto_retornar )
 
   return
 end
@@ -229,7 +161,7 @@ function scene:create( event )
 
   config_body( )
 
-  return
+  config_footer( )
 end
 
 
@@ -243,19 +175,13 @@ function scene:show( event )
   if ( phase == "will" ) then
     -- Called when the scene is still off screen (but is about to come on screen).
 
-    config_logo( )
+    config_equipe( )
   elseif ( phase == "did" ) then
     -- Called when the scene is now on screen.
     -- Insert code here to make the scene come alive.
     -- Example: start timers, begin animation, play audio, etc.
-    composer.removeScene( "escolher_fase" )
-
-    composer.removeScene( "configuracoes" )
-
-    composer.removeScene( "creditos" )
+    composer.removeScene( "tela_inicial" )
   end
-
-  return
 end
 
 
@@ -273,8 +199,6 @@ function scene:hide( event )
   elseif ( phase == "did" ) then
     -- Called immediately after scene goes off screen.
   end
-
-  return
 end
 
 
@@ -283,11 +207,10 @@ end
 ---------------------------------------------------------------------------------
 function scene:destroy( event )
   local sceneGroup = self.view
+
   -- Called prior to the removal of scene's view ("sceneGroup").
   -- Insert code here to clean up the scene.
   -- Example: remove display objects, save state, etc.
-
-  return
 end
 
 

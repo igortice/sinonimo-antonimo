@@ -68,6 +68,22 @@ local function main( )
     return
   end
 
+  function animar_pulsate( objeto, scale_init, scale_end )
+    local function1
+    local trans
+
+    local si = scale_init or 1.5
+    local se = scale_end  or 1
+
+    local function function1(e)
+      trans = transition.to(objeto, { time = 500, xScale = se, yScale = se, transition = easing.linear})
+    end
+
+    transition.to(objeto, { time = 500, delay = 500, xScale = si, yScale = si, transition = easing.linear, onComplete=function1})
+
+    return
+  end
+
   -- Load tela inicial
   ---------------------------------------------------------------------------------
   local composer = require "composer"

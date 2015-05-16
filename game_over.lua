@@ -44,7 +44,7 @@ local function config_game_over( )
   texto_game_over.xScale, texto_game_over.yScale  = 0, 0
   texto_game_over.x, texto_game_over.y            = centerX, centerY
   texto_game_over:setTextColor( 0.3683, 0.3683, 0.3683 )
-  transition.to(texto_game_over, { time = 1800, delay = 800,xScale = 2.0, yScale = 2.0, transition = easing.outElastic })
+  transition.to(texto_game_over, { time = 3800, delay = 800, xScale = 2.0, yScale = 2.0, rotation=360,transition = easing.outElastic })
 
   sceneGroupCreate:insert( texto_game_over )
 
