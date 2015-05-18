@@ -394,7 +394,7 @@ end
 local function config_letras_body( )
   local alfabeto              = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" }
   local all_objects_alfabeto  = {}
-  local regiao_letras         = { xi="70", xf="260", yi="200", yf="450" }
+  local regiao_letras         = { xi="70", xf="260", yi="200", yf="420" }
 
   -- Config drag letra
   ---------------------------------------------------------------------------------
@@ -491,6 +491,26 @@ end
 -- Config footer
 ---------------------------------------------------------------------------------
 local function config_footer( )
+  local function onIconTouch( self, event )
+    if event.phase == "began" then
+      play_pop_sound( )
+
+      composer.gotoScene( "escolher_fase", { effect = "zoomInOutFade", time = 500 } )
+    elseif event.phase == "ended" or event.phase == "cancelled" then
+      self.alpha = 0.25
+    end
+
+    return
+  end
+
+
+  local texto_retornar = display.newText( "retornar", 0, 0, "TrashHand", 24 )
+  texto_retornar:setTextColor( 0.3683, 0.3683, 0.3683 )
+  texto_retornar.x, texto_retornar.y  = centerX, _H - 30
+  texto_retornar.touch                = onIconTouch
+  texto_retornar:addEventListener( "touch", texto_retornar )
+
+  sceneGroupCreate:insert( texto_retornar )
 
   return
 end
@@ -527,7 +547,7 @@ function scene:show( event )
     -- Example: start timers, begin animation, play audio, etc.
 
     config_gerar_letras_etapa( )
-    
+
     composer.removeScene( "etapa" )
   end
 

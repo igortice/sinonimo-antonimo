@@ -103,10 +103,10 @@ local function config_logo(  )
   end
 
   function function2(e)
-    transition.to(interrogacao, { time = 500, delay = 500, rotation = 0})
+    transition.to(interrogacao, { time = 500, delay = 500, rotation = 10})
   end
 
-  timer.performWithDelay( 2000, function( ) transition.to(interrogacao, { time = 500, rotation = 10, onComplete=function1}); end )
+  timer.performWithDelay( 1500, function( ) transition.to(interrogacao, { time = 3800, delay = 800, rotation=360, transition = easing.outElastic }); end )
 
   local group = display.newGroup()
   group:insert( oq1 )
