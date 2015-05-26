@@ -40,8 +40,8 @@ local function main( )
   data            = {}
   data.settings   = loadsave.loadTable( "settings.json" )
 
-  -- if ( data.settings == nil ) then
-  if ( true ) then
+  if ( data.settings == nil ) then
+  -- if ( true ) then
       data.settings                   = {}
       data.settings.musicOn           = true
       data.settings.soundOn           = true

@@ -87,7 +87,7 @@ local function config_equipe( )
   c[1].text       = "Desenvolvedor\nIgor Rocha"
 
   c[2]            = display.newText(default_texto)
-  c[2].text       = "Designer\nMilena Matos"
+  c[2].text       = "Designer\nMilena Miranda"
 
 
   c[3]            = display.newText(default_texto)
