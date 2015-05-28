@@ -48,7 +48,7 @@ local function main( )
       data.settings.difficulty        = "easy"
       data.settings.highScore         = 0
       data.settings.fases_liberadas   = 1
-      data.settings.questions         = '[[{"palavra":"é surdo e mudo, mas conta tudo?","resposta":"livro"},{"palavra":"tem barba e não é bode tem dentes e não morde?","resposta":"bode"},{"palavra":"fruta que tem a semente por fora da casca?","resposta":"caju"},{"palavra":"Quanto mais se perde mais se tem?","resposta":"sono"}],[{"palavra":"hate","resposta":"odio"}]]'
+      data.settings.questions         = '[[{"palavra":"que é o que anda com os pés na cabeça?","resposta":"piolho"},{"palavra":"é surdo e mudo, mas conta tudo?","resposta":"livro"},{"palavra":"fica cheio durante o dia e vazia a noite?","resposta":"sapato"},{"palavra":"passaro brasileiro palíndromo?","resposta":"arara"},{"palavra":"fruta que tem a semente por fora da casca?","resposta":"caju"},{"palavra":"cai em pé e corre deitado?","resposta":"chuva"},{"palavra":"quanto mais se perde mais se tem?","resposta":"sono"}],[{"palavra":"protocolo de comunicação usado entre duas ou mais máquinas?","resposta":"ip"},{"palavra":"um dos protocolos sob os quais assenta o núcleo da Internet?","resposta":"tcp"},{"palavra":"é o protocolo padrão para envio de e-mails através da Internet?","resposta":"smtp"},{"palavra":"protocolo de gerenciamento de correio eletrônico?","resposta":"imap"},{"palavra":"protocolo bastante rápida e versátil de transferir arquivos?","resposta":"ftp"},{"palavra":"protocolo de rede que permitem a conexão com outro computador?","resposta":"ssh"},{"palavra":"é um protocolo de serviço TCP/IP?","resposta":"dhcp"}]]'
       loadsave.saveTable( data.settings, "settings.json" )
   end
 

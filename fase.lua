@@ -313,7 +313,7 @@ local function config_questions( )
      x        = centerX,
      y        = 110,
      width    = _W - 100,
-     fontSize = 25,
+     fontSize = 22,
      align    = "center",
      font     = "TrashHand"
   })
